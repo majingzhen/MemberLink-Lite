@@ -1,0 +1,58 @@
+server:
+  port: "8080"
+  mode: "debug"
+
+database:
+  host: "localhost"
+  port: "3306"
+  username: "root"
+  password: "123456"
+  dbname: "memberlink_lite"
+  charset: "utf8mb4"
+  parseTime: true
+  loc: "Local"
+
+redis:
+  host: "localhost"
+  port: "6379"
+  password: ""
+  db: 0
+
+jwt:
+  secret: "memberlink-lite-secret-key-change-in-production"
+  issuer: "memberlink-lite"
+  access_token_ttl: 24    # hours
+  refresh_token_ttl: 168  # hours (7 days)
+
+log:
+  level: "info"
+  format: "json"
+
+# 存储配置
+storage:
+  type: "local"  # 存储类型: local, aliyun, tencent
+  
+  # 本地存储配置
+  local:
+    base_path: "./uploads"
+    base_url: "http://localhost:8080/uploads/"
+  
+  # 阿里云OSS配置（需要时启用）
+  aliyun:
+    endpoint: ""
+    access_key_id: ""
+    access_key_secret: ""
+    bucket_name: ""
+    region: ""
+    use_https: true
+    custom_domain: ""
+  
+  # 腾讯云COS配置（需要时启用）
+  tencent:
+    secret_id: ""
+    secret_key: ""
+    region: ""
+    bucket_name: ""
+    app_id: ""
+    use_https: true
+    custom_domain: ""

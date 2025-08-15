@@ -1,0 +1,470 @@
+basePath: /api/v1
+definitions:
+  common.APIResponse:
+    properties:
+      code:
+        description: 状态码
+        type: integer
+      data:
+        description: 数据
+      message:
+        description: 消息
+        type: string
+      trace_id:
+        description: 追踪ID
+        type: string
+    type: object
+  controllers.RefreshTokenRequest:
+    properties:
+      refresh_token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+    required:
+    - refresh_token
+    type: object
+  models.User:
+    properties:
+      avatar:
+        type: string
+      balance:
+        type: integer
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      last_ip:
+        type: string
+      last_time:
+        type: string
+      nickname:
+        type: string
+      phone:
+        type: string
+      points:
+        type: integer
+      status:
+        type: integer
+      tenant_id:
+        type: string
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+  services.ChangePasswordRequest:
+    properties:
+      new_password:
+        example: newpassword123
+        maxLength: 20
+        minLength: 6
+        type: string
+      old_password:
+        example: oldpassword123
+        type: string
+    required:
+    - new_password
+    - old_password
+    type: object
+  services.LoginRequest:
+    properties:
+      password:
+        example: password123
+        type: string
+      username:
+        example: testuser
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  services.LoginResponse:
+    properties:
+      tokens:
+        $ref: '#/definitions/services.TokenResponse'
+      user:
+        $ref: '#/definitions/models.User'
+    type: object
+  services.RegisterRequest:
+    properties:
+      email:
+        example: test@example.com
+        type: string
+      nickname:
+        example: 测试用户
+        maxLength: 20
+        type: string
+      password:
+        example: password123
+        maxLength: 20
+        minLength: 6
+        type: string
+      phone:
+        example: "13800138000"
+        type: string
+      username:
+        example: testuser
+        maxLength: 20
+        minLength: 3
+        type: string
+    required:
+    - email
+    - password
+    - phone
+    - username
+    type: object
+  services.TokenResponse:
+    properties:
+      access_token:
+        type: string
+      expires_in:
+        type: integer
+      refresh_token:
+        type: string
+      token_type:
+        type: string
+    type: object
+  services.UpdateProfileRequest:
+    properties:
+      email:
+        example: newemail@example.com
+        type: string
+      nickname:
+        example: 新昵称
+        maxLength: 20
+        type: string
+      phone:
+        example: "13800138001"
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: dev@example.com
+    name: 开发团队
+    url: https://github.com/your-org/memberlink-lite
+  description: 基于 Golang + Vue3 + 微信小程序的高扩展性会员系统基础框架，专注于会员全生命周期自助管理
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: https://github.com/your-org/memberlink-lite
+  title: 高扩展性会员系统基础框架 API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: 使用用户名和密码进行登录，返回用户信息和JWT令牌
+      parameters:
+      - description: 登录信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/services.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 登录成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/services.LoginResponse'
+              type: object
+        "400":
+          description: 参数验证失败
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+        "403":
+          description: 用户已被禁用
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+      summary: 用户登录
+      tags:
+      - 认证管理
+  /auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: 注销当前登录状态，在实际应用中可以将令牌加入黑名单
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 登出成功
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+        "401":
+          description: 未授权访问
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+      security:
+      - BearerAuth: []
+      summary: 用户登出
+      tags:
+      - 认证管理
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: 使用有效的刷新令牌获取新的访问令牌和刷新令牌
+      parameters:
+      - description: 刷新令牌请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.RefreshTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 刷新成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/services.TokenResponse'
+              type: object
+        "400":
+          description: 请求参数格式错误
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+        "401":
+          description: 令牌无效或已过期
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+        "403":
+          description: 用户已被禁用
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+      summary: 刷新JWT令牌
+      tags:
+      - 认证管理
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: 创建新的会员账号，支持用户名、手机号、邮箱注册
+      parameters:
+      - description: 注册信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/services.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 注册成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.User'
+              type: object
+        "400":
+          description: 参数验证失败
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+        "409":
+          description: 用户已存在
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+      summary: 用户注册
+      tags:
+      - 认证管理
+  /user/avatar:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 上传用户头像图片，支持jpg、png格式，文件大小不超过5MB
+      parameters:
+      - description: 头像文件
+        in: formData
+        name: avatar
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 上传成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.APIResponse'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
+        "400":
+          description: 文件格式或大小错误
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+        "401":
+          description: 未授权访问
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+        "413":
+          description: 文件过大
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+        "415":
+          description: 不支持的文件类型
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+      security:
+      - BearerAuth: []
+      summary: 上传头像
+      tags:
+      - 会员管理
+  /user/password:
+    put:
+      consumes:
+      - application/json
+      description: 修改用户登录密码，需要验证旧密码，新密码需要满足强度要求
+      parameters:
+      - description: 密码信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/services.ChangePasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 修改成功
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+        "400":
+          description: 参数验证失败或旧密码错误
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+        "401":
+          description: 未授权访问
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+        "404":
+          description: 用户不存在
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+      security:
+      - BearerAuth: []
+      summary: 修改密码
+      tags:
+      - 会员管理
+  /user/profile:
+    get:
+      consumes:
+      - application/json
+      description: 获取当前登录用户的详细信息，包括基本资料、余额、积分等
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.User'
+              type: object
+        "401":
+          description: 未授权访问
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+        "404":
+          description: 用户不存在
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+      security:
+      - BearerAuth: []
+      summary: 获取个人信息
+      tags:
+      - 会员管理
+    put:
+      consumes:
+      - application/json
+      description: 更新用户的基本信息，支持修改昵称、邮箱、手机号，会验证邮箱和手机号的唯一性
+      parameters:
+      - description: 更新信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/services.UpdateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+        "400":
+          description: 参数验证失败
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+        "401":
+          description: 未授权访问
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+        "404":
+          description: 用户不存在
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+        "409":
+          description: 手机号或邮箱已存在
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+      security:
+      - BearerAuth: []
+      summary: 更新个人信息
+      tags:
+      - 会员管理
+securityDefinitions:
+  BearerAuth:
+    description: 'JWT令牌认证，格式: Bearer {token}'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
