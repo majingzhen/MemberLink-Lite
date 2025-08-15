@@ -1,4 +1,4 @@
-module MemberLink-Lite
+module member-link-lite
 
 go 1.21
 

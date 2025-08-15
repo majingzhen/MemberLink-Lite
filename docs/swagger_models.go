@@ -4,9 +4,9 @@ package docs
 // 确保所有的 API 响应和请求模型都有完整的文档
 
 import (
-	"MemberLink-Lite/common"
-	"MemberLink-Lite/models"
-	"MemberLink-Lite/services"
+	"member-link-lite/internal/models"
+	"member-link-lite/internal/services"
+	"member-link-lite/pkg/common"
 )
 
 // AssetInfoResponse 资产信息响应
