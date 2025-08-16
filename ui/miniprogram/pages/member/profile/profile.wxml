@@ -1,0 +1,94 @@
+<!--pages/member/profile/profile.wxml-->
+<view class="profile-container">
+  <!-- 未登录状态 -->
+  <view wx:if="{{!hasUserInfo}}" class="not-login">
+    <fresh-card type="primary" shadow="{{true}}" radius="large">
+      <view class="not-login-content">
+        <view class="login-icon">👤</view>
+        <view class="login-title">请先登录</view>
+        <view class="login-desc">登录后可查看个人信息和使用更多功能</view>
+        <fresh-button
+          type="primary"
+          size="large"
+          text="立即登录"
+          bindtap="goToLogin"
+        />
+      </view>
+    </fresh-card>
+  </view>
+
+  <!-- 已登录状态 -->
+  <view wx:else class="profile-content">
+    <!-- 用户信息卡片 -->
+    <view class="user-card">
+      <fresh-card type="primary" shadow="{{true}}" radius="large">
+        <view class="user-info">
+          <!-- 头像 -->
+          <view class="avatar-section" bindtap="onChooseAvatar">
+            <image 
+              class="user-avatar" 
+              src="{{userInfo.avatar || '/images/default-avatar.png'}}" 
+              mode="aspectFill"
+            />
+            <view class="avatar-edit">📷</view>
+          </view>
+
+          <!-- 基本信息 -->
+          <view class="user-details">
+            <view class="user-name">{{userInfo.nickname || userInfo.username}}</view>
+            <view class="user-meta">
+              <text wx:if="{{userInfo.phone}}">📱 {{userInfo.phone}}</text>
+              <text wx:if="{{userInfo.email}}">📧 {{userInfo.email}}</text>
+            </view>
+            <view class="user-stats">
+              <view class="stat-item">
+                <view class="stat-value">¥{{formatMoney(userInfo.balance)}}</view>
+                <view class="stat-label">余额</view>
+              </view>
+              <view class="stat-divider"></view>
+              <view class="stat-item">
+                <view class="stat-value">{{userInfo.points || 0}}</view>
+                <view class="stat-label">积分</view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </fresh-card>
+    </view>
+
+    <!-- 功能菜单 -->
+    <view class="menu-section">
+      <view class="section-title">功能菜单</view>
+      
+      <fresh-card shadow="{{true}}" radius="medium">
+        <view class="menu-list">
+          <view 
+            wx:for="{{menuList}}" 
+            wx:key="title"
+            class="menu-item"
+            data-url="{{item.url}}"
+            bindtap="onMenuTap"
+          >
+            <view class="menu-icon">{{item.icon}}</view>
+            <view class="menu-content">
+              <view class="menu-title">{{item.title}}</view>
+              <view class="menu-desc">{{item.desc}}</view>
+            </view>
+            <view class="menu-arrow">›</view>
+          </view>
+        </view>
+      </fresh-card>
+    </view>
+
+    <!-- 退出登录 -->
+    <view class="logout-section">
+      <fresh-button
+        type="danger"
+        size="large"
+        block="{{true}}"
+        text="退出登录"
+        bindtap="onLogout"
+      />
+    </view>
+  </view>
+</view>

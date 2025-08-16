@@ -1,0 +1,188 @@
+/* components/fresh-loading/index.wxss */
+
+.fresh-loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fresh-loading-overlay.mask {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* 加载容器 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 24rpx;
+  padding: 48rpx;
+  backdrop-filter: blur(20rpx);
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+}
+
+.loading-container.small {
+  padding: 32rpx;
+}
+
+.loading-container.large {
+  padding: 64rpx;
+}
+
+/* 旋转加载 */
+.spinner-loading {
+  margin-bottom: 24rpx;
+}
+
+.spinner {
+  border: 6rpx solid rgba(102, 126, 234, 0.2);
+  border-top: 6rpx solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.spinner.small {
+  width: 48rpx;
+  height: 48rpx;
+  border-width: 4rpx;
+}
+
+.spinner.medium {
+  width: 64rpx;
+  height: 64rpx;
+  border-width: 6rpx;
+}
+
+.spinner.large {
+  width: 80rpx;
+  height: 80rpx;
+  border-width: 8rpx;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 点点加载 */
+.dots-loading {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 24rpx;
+}
+
+.dot {
+  background: #667eea;
+  border-radius: 50%;
+  animation: dotPulse 1.4s ease-in-out infinite both;
+}
+
+.dot.small {
+  width: 16rpx;
+  height: 16rpx;
+}
+
+.dot.medium {
+  width: 20rpx;
+  height: 20rpx;
+}
+
+.dot.large {
+  width: 24rpx;
+  height: 24rpx;
+}
+
+.dot:nth-child(1) { animation-delay: -0.32s; }
+.dot:nth-child(2) { animation-delay: -0.16s; }
+.dot:nth-child(3) { animation-delay: 0s; }
+
+@keyframes dotPulse {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* 脉冲加载 */
+.pulse-loading {
+  margin-bottom: 24rpx;
+}
+
+.pulse {
+  background: #667eea;
+  border-radius: 50%;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.pulse.small {
+  width: 48rpx;
+  height: 48rpx;
+}
+
+.pulse.medium {
+  width: 64rpx;
+  height: 64rpx;
+}
+
+.pulse.large {
+  width: 80rpx;
+  height: 80rpx;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+}
+
+/* 加载文字 */
+.loading-text {
+  color: #606266;
+  text-align: center;
+  font-weight: 500;
+}
+
+.loading-text.small {
+  font-size: 24rpx;
+}
+
+.loading-text.medium {
+  font-size: 28rpx;
+}
+
+.loading-text.large {
+  font-size: 32rpx;
+}
+
+/* 无遮罩模式 */
+.fresh-loading-overlay:not(.mask) .loading-container {
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.fresh-loading-overlay:not(.mask) .loading-text {
+  color: #667eea;
+}

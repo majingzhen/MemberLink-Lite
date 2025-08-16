@@ -1,0 +1,22 @@
+<!-- components/fresh-form-item/index.wxml -->
+<view class="fresh-form-item {{labelPosition}} {{error ? 'error' : ''}} {{customClass}}">
+  <!-- 标签 -->
+  <view 
+    wx:if="{{label}}" 
+    class="form-label"
+    style="{{labelPosition === 'left' || labelPosition === 'right' ? 'width: ' + labelWidth : ''}}"
+  >
+    <text class="label-text">{{label}}</text>
+    <text wx:if="{{required}}" class="required-mark">*</text>
+  </view>
+
+  <!-- 内容区域 -->
+  <view class="form-content">
+    <slot></slot>
+  </view>
+
+  <!-- 错误信息 -->
+  <view wx:if="{{error}}" class="form-error">
+    <text class="error-text">{{error}}</text>
+  </view>
+</view>

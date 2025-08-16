@@ -1,0 +1,10 @@
+{
+  "usingComponents": {
+    "fresh-card": "/components/fresh-card/index",
+    "fresh-button": "/components/fresh-button/index"
+  },
+  "navigationBarTitleText": "登录",
+  "navigationBarBackgroundColor": "#667eea",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#667eea"
+}

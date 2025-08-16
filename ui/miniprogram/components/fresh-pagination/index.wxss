@@ -1,0 +1,135 @@
+/* components/fresh-pagination/index.wxss */
+
+.fresh-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32rpx;
+  background: linear-gradient(135deg, #f8f9ff 0%, #e8f4fd 100%);
+  border-radius: 24rpx;
+  margin: 32rpx 0;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.08);
+}
+
+/* 总数信息 */
+.pagination-info {
+  flex-shrink: 0;
+}
+
+.info-text {
+  color: #666;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+/* 分页控制 */
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+/* 分页按钮 */
+.page-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 20rpx;
+  padding: 16rpx 24rpx;
+  font-size: 26rpx;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  min-width: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-btn::after {
+  border: none;
+}
+
+.page-btn:not(.disabled):active {
+  transform: scale(0.95);
+  box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.3);
+}
+
+.page-btn.disabled {
+  background: #f0f0f0;
+  color: #ccc;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 按钮文字和图标 */
+.btn-text {
+  font-size: 24rpx;
+}
+
+.btn-icon {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+/* 首页和末页按钮 */
+.first-btn,
+.last-btn {
+  padding: 16rpx 20rpx;
+  font-size: 24rpx;
+}
+
+/* 上一页下一页按钮 */
+.prev-btn,
+.next-btn {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 32rpx;
+  padding: 0;
+}
+
+/* 页码信息 */
+.page-info {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 16rpx;
+  padding: 12rpx 20rpx;
+  margin: 0 8rpx;
+}
+
+.page-text {
+  color: #333;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+/* 响应式适配 */
+@media (max-width: 375px) {
+  .fresh-pagination {
+    flex-direction: column;
+    gap: 24rpx;
+    padding: 24rpx;
+  }
+  
+  .pagination-controls {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .first-btn,
+  .last-btn {
+    display: none;
+  }
+}
+
+/* 简化模式（小屏幕） */
+.fresh-pagination.simple {
+  padding: 20rpx 32rpx;
+}
+
+.fresh-pagination.simple .first-btn,
+.fresh-pagination.simple .last-btn {
+  display: none;
+}
+
+.fresh-pagination.simple .pagination-controls {
+  gap: 12rpx;
+}

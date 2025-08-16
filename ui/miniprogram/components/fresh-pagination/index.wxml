@@ -1,0 +1,51 @@
+<!-- components/fresh-pagination/index.wxml -->
+<view class="fresh-pagination {{customClass}}">
+  <!-- 总数信息 -->
+  <view wx:if="{{showTotal}}" class="pagination-info">
+    <text class="info-text">共 {{total}} 条</text>
+  </view>
+
+  <!-- 分页控制 -->
+  <view class="pagination-controls">
+    <!-- 首页按钮 -->
+    <button 
+      class="page-btn first-btn {{currentPage <= 1 ? 'disabled' : ''}}"
+      bindtap="goToFirstPage"
+      disabled="{{currentPage <= 1}}"
+    >
+      <text class="btn-text">首页</text>
+    </button>
+
+    <!-- 上一页按钮 -->
+    <button 
+      class="page-btn prev-btn {{currentPage <= 1 ? 'disabled' : ''}}"
+      bindtap="prevPage"
+      disabled="{{currentPage <= 1}}"
+    >
+      <text class="btn-icon">‹</text>
+    </button>
+
+    <!-- 页码信息 -->
+    <view wx:if="{{showPageInfo}}" class="page-info">
+      <text class="page-text">{{currentPage}}/{{totalPages}}</text>
+    </view>
+
+    <!-- 下一页按钮 -->
+    <button 
+      class="page-btn next-btn {{currentPage >= totalPages ? 'disabled' : ''}}"
+      bindtap="nextPage"
+      disabled="{{currentPage >= totalPages}}"
+    >
+      <text class="btn-icon">›</text>
+    </button>
+
+    <!-- 末页按钮 -->
+    <button 
+      class="page-btn last-btn {{currentPage >= totalPages ? 'disabled' : ''}}"
+      bindtap="goToLastPage"
+      disabled="{{currentPage >= totalPages}}"
+    >
+      <text class="btn-text">末页</text>
+    </button>
+  </view>
+</view>

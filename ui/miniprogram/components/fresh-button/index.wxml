@@ -1,0 +1,28 @@
+<!-- components/fresh-button/index.wxml -->
+<button 
+  class="fresh-button {{type}} {{size}} {{round ? 'round' : ''}} {{block ? 'block' : ''}} {{disabled ? 'disabled' : ''}} {{loading ? 'loading' : ''}} {{customClass}}"
+  disabled="{{disabled || loading}}"
+  form-type="{{formType}}"
+  open-type="{{openType}}"
+  bindtap="onButtonTap"
+  bindgetuserinfo="onGetUserInfo"
+  bindcontact="onContact"
+  bindgetphonenumber="onGetPhoneNumber"
+  bindopensetting="onOpenSetting"
+  bindlaunchapp="onLaunchApp"
+  bindchooseavatar="onChooseAvatar"
+>
+  <!-- 加载图标 -->
+  <view wx:if="{{loading}}" class="loading-icon">
+    <view class="spinner"></view>
+  </view>
+
+  <!-- 按钮图标 -->
+  <text wx:elif="{{icon}}" class="button-icon">{{icon}}</text>
+
+  <!-- 按钮文字 -->
+  <text class="button-text">
+    <slot wx:if="{{!text}}"></slot>
+    <text wx:else>{{text}}</text>
+  </text>
+</button>

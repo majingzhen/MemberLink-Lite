@@ -1,0 +1,15 @@
+<!-- components/fresh-card/index.wxml -->
+<view 
+  class="fresh-card {{type}} {{radius}} {{shadow ? 'shadow' : ''}} {{border ? 'border' : ''}} {{clickable ? 'clickable' : ''}} {{customClass}}"
+  bindtap="onCardTap"
+>
+  <!-- 卡片标题 -->
+  <view wx:if="{{title}}" class="card-header">
+    <text class="card-title">{{title}}</text>
+  </view>
+
+  <!-- 卡片内容 -->
+  <view class="card-content">
+    <slot></slot>
+  </view>
+</view>

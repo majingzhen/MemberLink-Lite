@@ -1,0 +1,8 @@
+<!-- components/fresh-form/index.wxml -->
+<form 
+  class="fresh-form {{labelPosition}} {{customClass}}"
+  bindsubmit="onSubmit"
+  bindreset="onReset"
+>
+  <slot></slot>
+</form>

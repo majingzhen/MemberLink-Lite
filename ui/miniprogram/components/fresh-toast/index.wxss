@@ -1,0 +1,104 @@
+/* components/fresh-toast/index.wxss */
+
+.fresh-toast-overlay {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 10000;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.fresh-toast-overlay.top {
+  top: 200rpx;
+}
+
+.fresh-toast-overlay.center {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.fresh-toast-overlay.bottom {
+  bottom: 200rpx;
+}
+
+/* 提示容器 */
+.toast-container {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  border-radius: 24rpx;
+  padding: 24rpx 32rpx;
+  margin: 0 32rpx;
+  max-width: 600rpx;
+  backdrop-filter: blur(20rpx);
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.2);
+  pointer-events: auto;
+}
+
+/* 提示类型 */
+.toast-container.success {
+  background: linear-gradient(135deg, rgba(103, 194, 58, 0.9) 0%, rgba(76, 175, 80, 0.9) 100%);
+}
+
+.toast-container.error {
+  background: linear-gradient(135deg, rgba(245, 108, 108, 0.9) 0%, rgba(244, 67, 54, 0.9) 100%);
+}
+
+.toast-container.warning {
+  background: linear-gradient(135deg, rgba(230, 162, 60, 0.9) 0%, rgba(255, 193, 7, 0.9) 100%);
+}
+
+.toast-container.info {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+}
+
+/* 图标 */
+.toast-icon {
+  margin-right: 16rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+/* 文字 */
+.toast-text {
+  font-size: 28rpx;
+  line-height: 1.4;
+  word-break: break-all;
+}
+
+/* 动画 */
+.fade-in {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 响应式适配 */
+@media (max-width: 375px) {
+  .toast-container {
+    padding: 20rpx 24rpx;
+    margin: 0 24rpx;
+  }
+  
+  .toast-icon {
+    font-size: 28rpx;
+    margin-right: 12rpx;
+  }
+  
+  .toast-text {
+    font-size: 26rpx;
+  }
+}

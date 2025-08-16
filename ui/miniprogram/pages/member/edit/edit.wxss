@@ -1,0 +1,59 @@
+/* pages/member/edit/edit.wxss */
+
+.edit-container {
+  min-height: 100vh;
+  padding: 32rpx;
+}
+
+.edit-content {
+  margin-bottom: 48rpx;
+}
+
+/* 表单区域 */
+.form-section {
+  padding: 16rpx 0;
+}
+
+/* 操作按钮 */
+.action-buttons {
+  margin-top: 48rpx;
+}
+
+/* 提示信息 */
+.tips-section {
+  margin-top: 32rpx;
+}
+
+.tips-content {
+  padding: 24rpx 0;
+}
+
+.tips-title {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #303133;
+  margin-bottom: 16rpx;
+}
+
+.tips-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.tips-list text {
+  font-size: 24rpx;
+  color: #606266;
+  line-height: 1.5;
+}
+
+/* 响应式适配 */
+@media (max-width: 375px) {
+  .edit-container {
+    padding: 24rpx;
+  }
+  
+  .action-buttons {
+    margin-top: 32rpx;
+  }
+}

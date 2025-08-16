@@ -1,0 +1,211 @@
+/* components/fresh-button/index.wxss */
+
+.fresh-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.fresh-button::after {
+  border: none;
+}
+
+/* 按钮大小 */
+.fresh-button.small {
+  padding: 16rpx 32rpx;
+  font-size: 24rpx;
+  min-height: 56rpx;
+}
+
+.fresh-button.medium {
+  padding: 20rpx 40rpx;
+  font-size: 28rpx;
+  min-height: 72rpx;
+}
+
+.fresh-button.large {
+  padding: 24rpx 48rpx;
+  font-size: 32rpx;
+  min-height: 88rpx;
+}
+
+/* 圆角样式 */
+.fresh-button.round.small {
+  border-radius: 28rpx;
+}
+
+.fresh-button.round.medium {
+  border-radius: 36rpx;
+}
+
+.fresh-button.round.large {
+  border-radius: 44rpx;
+}
+
+/* 块级按钮 */
+.fresh-button.block {
+  width: 100%;
+  display: flex;
+}
+
+/* 按钮类型 */
+.fresh-button.primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.fresh-button.primary:not(.disabled):not(.loading):active {
+  transform: translateY(-2rpx);
+  box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.4);
+}
+
+.fresh-button.secondary {
+  background: #f8f9fa;
+  color: #6c757d;
+  border: 2rpx solid #e9ecef;
+}
+
+.fresh-button.secondary:not(.disabled):not(.loading):active {
+  background: #e9ecef;
+  transform: translateY(-1rpx);
+}
+
+.fresh-button.success {
+  background: linear-gradient(135deg, #67c23a 0%, #4caf50 100%);
+  color: white;
+}
+
+.fresh-button.success:not(.disabled):not(.loading):active {
+  transform: translateY(-2rpx);
+  box-shadow: 0 8rpx 24rpx rgba(103, 194, 58, 0.4);
+}
+
+.fresh-button.warning {
+  background: linear-gradient(135deg, #e6a23c 0%, #ff9800 100%);
+  color: white;
+}
+
+.fresh-button.warning:not(.disabled):not(.loading):active {
+  transform: translateY(-2rpx);
+  box-shadow: 0 8rpx 24rpx rgba(230, 162, 60, 0.4);
+}
+
+.fresh-button.danger {
+  background: linear-gradient(135deg, #f56c6c 0%, #f44336 100%);
+  color: white;
+}
+
+.fresh-button.danger:not(.disabled):not(.loading):active {
+  transform: translateY(-2rpx);
+  box-shadow: 0 8rpx 24rpx rgba(245, 108, 108, 0.4);
+}
+
+.fresh-button.text {
+  background: transparent;
+  color: #667eea;
+  border: none;
+}
+
+.fresh-button.text:not(.disabled):not(.loading):active {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+/* 禁用状态 */
+.fresh-button.disabled {
+  background: #f0f0f0 !important;
+  color: #ccc !important;
+  border-color: #f0f0f0 !important;
+  transform: none !important;
+  box-shadow: none !important;
+  cursor: not-allowed;
+}
+
+/* 加载状态 */
+.fresh-button.loading {
+  pointer-events: none;
+}
+
+/* 按钮内容 */
+.button-icon {
+  margin-right: 12rpx;
+  font-size: 1.2em;
+}
+
+.button-text {
+  flex: 1;
+  text-align: center;
+}
+
+/* 加载图标 */
+.loading-icon {
+  margin-right: 12rpx;
+}
+
+.spinner {
+  width: 32rpx;
+  height: 32rpx;
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
+  border-top: 4rpx solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 特殊效果 */
+.fresh-button.gradient-border {
+  background: white;
+  color: #667eea;
+  border: 2rpx solid transparent;
+  background-clip: padding-box;
+  position: relative;
+}
+
+.fresh-button.gradient-border::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: inherit;
+  z-index: -1;
+  margin: -2rpx;
+}
+
+/* 悬浮效果 */
+.fresh-button.hover-lift:not(.disabled):not(.loading):hover {
+  transform: translateY(-4rpx);
+  box-shadow: 0 12rpx 32rpx rgba(0, 0, 0, 0.15);
+}
+
+/* 响应式适配 */
+@media (max-width: 375px) {
+  .fresh-button.small {
+    padding: 12rpx 24rpx;
+    font-size: 22rpx;
+    min-height: 48rpx;
+  }
+  
+  .fresh-button.medium {
+    padding: 16rpx 32rpx;
+    font-size: 26rpx;
+    min-height: 64rpx;
+  }
+  
+  .fresh-button.large {
+    padding: 20rpx 40rpx;
+    font-size: 30rpx;
+    min-height: 80rpx;
+  }
+}

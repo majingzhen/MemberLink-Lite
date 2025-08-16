@@ -1,0 +1,7 @@
+/* components/fresh-form/index.wxss */
+
+.fresh-form {
+  width: 100%;
+}
+
+/* 表单项样式在 fresh-form-item 组件中定义 */

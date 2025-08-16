@@ -1,0 +1,53 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/auth/login/login",
+    "pages/member/profile/profile",
+    "pages/member/edit/edit",
+    "pages/member/password/password",
+    "pages/asset/index/index",
+    "pages/asset/balance/balance",
+    "pages/asset/points/points"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#667eea",
+    "navigationBarTitleText": "会员通・轻框架",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f5f7fa",
+    "enablePullDownRefresh": true,
+    "onReachBottomDistance": 50
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#667eea",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/tab/home.png",
+        "selectedIconPath": "images/tab/home-active.png"
+      },
+      {
+        "pagePath": "pages/asset/index/index",
+        "text": "资产",
+        "iconPath": "images/tab/asset.png",
+        "selectedIconPath": "images/tab/asset-active.png"
+      },
+      {
+        "pagePath": "pages/member/profile/profile",
+        "text": "我的",
+        "iconPath": "images/tab/profile.png",
+        "selectedIconPath": "images/tab/profile-active.png"
+      }
+    ]
+  },
+  "networkTimeout": {
+    "request": 10000,
+    "downloadFile": 10000
+  },
+  "debug": true,
+  "sitemapLocation": "sitemap.json"
+}

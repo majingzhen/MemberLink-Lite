@@ -1,0 +1,128 @@
+<!--pages/asset/balance/balance.wxml-->
+<view class="balance-container">
+  <!-- 筛选区域 -->
+  <view class="filter-section">
+    <fresh-card shadow="{{true}}" radius="medium">
+      <view class="filter-content">
+        <!-- 类型筛选 -->
+        <view class="filter-item">
+          <view class="filter-label">类型筛选</view>
+          <picker 
+            mode="selector" 
+            range="{{typeOptions}}" 
+            range-key="label"
+            bindchange="onTypeChange"
+          >
+            <view class="picker-display">
+              <text>{{filters.type ? getTypeText(filters.type) : '全部类型'}}</text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 时间筛选 -->
+        <view class="filter-row">
+          <view class="filter-item">
+            <view class="filter-label">开始时间</view>
+            <picker 
+              mode="date" 
+              value="{{filters.startTime}}"
+              bindchange="onStartTimeChange"
+            >
+              <view class="picker-display">
+                <text>{{filters.startTime || '选择日期'}}</text>
+                <text class="picker-arrow">›</text>
+              </view>
+            </picker>
+          </view>
+
+          <view class="filter-item">
+            <view class="filter-label">结束时间</view>
+            <picker 
+              mode="date" 
+              value="{{filters.endTime}}"
+              bindchange="onEndTimeChange"
+            >
+              <view class="picker-display">
+                <text>{{filters.endTime || '选择日期'}}</text>
+                <text class="picker-arrow">›</text>
+              </view>
+            </picker>
+          </view>
+        </view>
+
+        <!-- 清除筛选 -->
+        <view wx:if="{{filters.type || filters.startTime || filters.endTime}}" class="filter-actions">
+          <fresh-button
+            type="secondary"
+            size="small"
+            text="清除筛选"
+            bindtap="onClearFilters"
+          />
+        </view>
+      </view>
+    </fresh-card>
+  </view>
+
+  <!-- 记录列表 -->
+  <view class="records-section">
+    <view wx:if="{{records.length > 0}}" class="records-list">
+      <view 
+        wx:for="{{records}}" 
+        wx:key="id"
+        class="record-item"
+      >
+        <fresh-card shadow="{{true}}" radius="medium">
+          <view class="record-content">
+            <!-- 记录信息 -->
+            <view class="record-info">
+              <view class="record-header">
+                <view class="record-type" style="color: {{getTypeColor(item.type)}}">
+                  {{getTypeText(item.type)}}
+                </view>
+                <view class="record-amount" style="color: {{item.amount >= 0 ? '#67c23a' : '#f56c6c'}}">
+                  {{item.amount >= 0 ? '+' : ''}}¥{{formatMoney(item.amount)}}
+                </view>
+              </view>
+
+              <view wx:if="{{item.remark}}" class="record-remark">
+                {{item.remark}}
+              </view>
+
+              <view class="record-footer">
+                <view class="record-time">{{getRelativeTime(item.created_at)}}</view>
+                <view class="record-balance">余额: ¥{{formatMoney(item.balance_after)}}</view>
+              </view>
+            </view>
+          </view>
+        </fresh-card>
+      </view>
+
+      <!-- 加载更多 -->
+      <view wx:if="{{pagination.hasMore}}" class="load-more">
+        <view wx:if="{{loadingMore}}" class="loading-text">
+          <text>加载中...</text>
+        </view>
+        <view wx:else class="load-more-text">
+          <text>上拉加载更多</text>
+        </view>
+      </view>
+
+      <!-- 没有更多 -->
+      <view wx:else class="no-more">
+        <text>没有更多记录了</text>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view wx:else class="empty-state">
+      <fresh-card type="info" shadow="{{true}}" radius="large">
+        <view class="empty-content">
+          <view class="empty-icon">📊</view>
+          <view class="empty-title">暂无余额记录</view>
+          <view class="empty-desc">您还没有任何余额变动记录</view>
+        </view>
+      </fresh-card>
+    </view>
+  </view>
+</view>

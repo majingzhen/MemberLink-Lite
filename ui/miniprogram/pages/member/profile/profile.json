@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+    "fresh-card": "/components/fresh-card/index",
+    "fresh-button": "/components/fresh-button/index"
+  },
+  "navigationBarTitleText": "个人中心",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#f5f7fa"
+}

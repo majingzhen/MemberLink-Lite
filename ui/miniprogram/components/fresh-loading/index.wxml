@@ -1,0 +1,28 @@
+<!-- components/fresh-loading/index.wxml -->
+<view 
+  wx:if="{{visible}}" 
+  class="fresh-loading-overlay {{mask ? 'mask' : ''}} {{customClass}}"
+  bindtap="onMaskTap"
+>
+  <view class="loading-container {{size}}">
+    <!-- 旋转加载 -->
+    <view wx:if="{{type === 'spinner'}}" class="spinner-loading">
+      <view class="spinner {{size}}"></view>
+    </view>
+
+    <!-- 点点加载 -->
+    <view wx:elif="{{type === 'dots'}}" class="dots-loading">
+      <view class="dot {{size}}"></view>
+      <view class="dot {{size}}"></view>
+      <view class="dot {{size}}"></view>
+    </view>
+
+    <!-- 脉冲加载 -->
+    <view wx:elif="{{type === 'pulse'}}" class="pulse-loading">
+      <view class="pulse {{size}}"></view>
+    </view>
+
+    <!-- 加载文字 -->
+    <text wx:if="{{text}}" class="loading-text {{size}}">{{text}}</text>
+  </view>
+</view>

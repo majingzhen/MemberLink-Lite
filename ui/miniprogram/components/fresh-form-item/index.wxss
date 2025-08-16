@@ -1,0 +1,179 @@
+/* components/fresh-form-item/index.wxss */
+
+.fresh-form-item {
+  margin-bottom: 32rpx;
+  width: 100%;
+}
+
+/* 标签在上方 */
+.fresh-form-item.top {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 标签在左侧 */
+.fresh-form-item.left {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.fresh-form-item.left .form-content {
+  flex: 1;
+}
+
+/* 标签在右侧 */
+.fresh-form-item.right {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: flex-start;
+}
+
+.fresh-form-item.right .form-content {
+  flex: 1;
+}
+
+/* 表单标签 */
+.form-label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+  flex-shrink: 0;
+}
+
+.fresh-form-item.left .form-label,
+.fresh-form-item.right .form-label {
+  margin-bottom: 0;
+  margin-right: 24rpx;
+  padding-top: 24rpx;
+}
+
+.fresh-form-item.right .form-label {
+  margin-right: 0;
+  margin-left: 24rpx;
+}
+
+.label-text {
+  color: #606266;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.required-mark {
+  color: #f56c6c;
+  font-size: 28rpx;
+  margin-left: 8rpx;
+}
+
+/* 表单内容 */
+.form-content {
+  width: 100%;
+}
+
+/* 错误状态 */
+.fresh-form-item.error .form-content {
+  border-color: #f56c6c;
+}
+
+.fresh-form-item.error .label-text {
+  color: #f56c6c;
+}
+
+/* 错误信息 */
+.form-error {
+  margin-top: 12rpx;
+  padding-left: 16rpx;
+}
+
+.error-text {
+  color: #f56c6c;
+  font-size: 24rpx;
+  line-height: 1.4;
+}
+
+/* 输入框样式 */
+.form-content .fresh-input {
+  background: rgba(255, 255, 255, 0.8);
+  border: 2rpx solid #e4e7ed;
+  border-radius: 24rpx;
+  padding: 24rpx 32rpx;
+  font-size: 32rpx;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.form-content .fresh-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 8rpx rgba(102, 126, 234, 0.1);
+}
+
+.fresh-form-item.error .form-content .fresh-input {
+  border-color: #f56c6c;
+}
+
+.fresh-form-item.error .form-content .fresh-input:focus {
+  border-color: #f56c6c;
+  box-shadow: 0 0 0 8rpx rgba(245, 108, 108, 0.1);
+}
+
+/* 文本域样式 */
+.form-content .fresh-textarea {
+  background: rgba(255, 255, 255, 0.8);
+  border: 2rpx solid #e4e7ed;
+  border-radius: 24rpx;
+  padding: 24rpx 32rpx;
+  font-size: 32rpx;
+  width: 100%;
+  min-height: 120rpx;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.form-content .fresh-textarea:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 8rpx rgba(102, 126, 234, 0.1);
+}
+
+/* 选择器样式 */
+.form-content .fresh-picker {
+  background: rgba(255, 255, 255, 0.8);
+  border: 2rpx solid #e4e7ed;
+  border-radius: 24rpx;
+  padding: 24rpx 32rpx;
+  font-size: 32rpx;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.form-content .fresh-picker::after {
+  content: '›';
+  color: #909399;
+  font-size: 32rpx;
+  font-weight: bold;
+  transform: rotate(90deg);
+}
+
+/* 响应式适配 */
+@media (max-width: 375px) {
+  .fresh-form-item {
+    margin-bottom: 24rpx;
+  }
+  
+  .form-label {
+    margin-bottom: 12rpx;
+  }
+  
+  .label-text {
+    font-size: 26rpx;
+  }
+  
+  .form-content .fresh-input,
+  .form-content .fresh-textarea {
+    padding: 20rpx 24rpx;
+    font-size: 30rpx;
+  }
+}

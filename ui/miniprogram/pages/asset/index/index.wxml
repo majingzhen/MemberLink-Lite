@@ -1,0 +1,131 @@
+<!--pages/asset/index/index.wxml-->
+<view class="asset-container">
+  <!-- 未登录状态 -->
+  <view wx:if="{{!hasUserInfo}}" class="not-login">
+    <fresh-card type="primary" shadow="{{true}}" radius="large">
+      <view class="not-login-content">
+        <view class="login-icon">💰</view>
+        <view class="login-title">请先登录</view>
+        <view class="login-desc">登录后可查看您的资产信息</view>
+        <fresh-button
+          type="primary"
+          size="large"
+          text="立即登录"
+          bindtap="goToLogin"
+        />
+      </view>
+    </fresh-card>
+  </view>
+
+  <!-- 已登录状态 -->
+  <view wx:else class="asset-content">
+    <!-- 资产概览 -->
+    <view class="asset-overview">
+      <view class="overview-header">
+        <view class="header-title">我的资产</view>
+        <view class="header-subtitle">Asset Overview</view>
+      </view>
+
+      <!-- 余额卡片 -->
+      <view class="asset-cards">
+        <fresh-card 
+          type="success" 
+          shadow="{{true}}" 
+          radius="large"
+          clickable="{{true}}"
+          bindtap="onBalanceCardTap"
+        >
+          <view class="asset-card-content">
+            <view class="asset-icon">💰</view>
+            <view class="asset-info">
+              <view class="asset-label">账户余额</view>
+              <view class="asset-value">¥{{formatMoney(assetInfo.balance)}}</view>
+              <view class="asset-desc">点击查看余额记录</view>
+            </view>
+          </view>
+        </fresh-card>
+
+        <fresh-card 
+          type="warning" 
+          shadow="{{true}}" 
+          radius="large"
+          clickable="{{true}}"
+          bindtap="onPointsCardTap"
+        >
+          <view class="asset-card-content">
+            <view class="asset-icon">⭐</view>
+            <view class="asset-info">
+              <view class="asset-label">积分余额</view>
+              <view class="asset-value">{{formatNumber(assetInfo.points)}}</view>
+              <view class="asset-desc">点击查看积分记录</view>
+            </view>
+          </view>
+        </fresh-card>
+      </view>
+    </view>
+
+    <!-- 快捷操作 -->
+    <view class="quick-actions">
+      <view class="section-title">快捷操作</view>
+      
+      <view class="actions-grid">
+        <view 
+          wx:for="{{quickActions}}" 
+          wx:key="title"
+          class="action-item"
+          data-url="{{item.url}}"
+          bindtap="onQuickActionTap"
+        >
+          <fresh-card 
+            shadow="{{true}}" 
+            radius="medium"
+            clickable="{{true}}"
+          >
+            <view class="action-content">
+              <view class="action-icon" style="color: {{item.color}}">{{item.icon}}</view>
+              <view class="action-title">{{item.title}}</view>
+              <view class="action-desc">{{item.desc}}</view>
+            </view>
+          </fresh-card>
+        </view>
+      </view>
+    </view>
+
+    <!-- 资产统计 -->
+    <view class="asset-stats">
+      <view class="section-title">资产统计</view>
+      
+      <fresh-card shadow="{{true}}" radius="large">
+        <view class="stats-content">
+          <view class="stats-item">
+            <view class="stats-icon">📈</view>
+            <view class="stats-info">
+              <view class="stats-label">本月收入</view>
+              <view class="stats-value">¥0.00</view>
+            </view>
+          </view>
+          
+          <view class="stats-divider"></view>
+          
+          <view class="stats-item">
+            <view class="stats-icon">📉</view>
+            <view class="stats-info">
+              <view class="stats-label">本月支出</view>
+              <view class="stats-value">¥0.00</view>
+            </view>
+          </view>
+          
+          <view class="stats-divider"></view>
+          
+          <view class="stats-item">
+            <view class="stats-icon">🎯</view>
+            <view class="stats-info">
+              <view class="stats-label">积分获得</view>
+              <view class="stats-value">0</view>
+            </view>
+          </view>
+        </view>
+      </fresh-card>
+    </view>
+  </view>
+</view>

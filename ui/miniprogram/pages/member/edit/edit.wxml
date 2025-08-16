@@ -1,0 +1,91 @@
+<!--pages/member/edit/edit.wxml-->
+<view class="edit-container">
+  <view class="edit-content">
+    <fresh-card shadow="{{true}}" radius="large">
+      <view class="form-section">
+        <!-- 昵称 -->
+        <fresh-form-item 
+          label="昵称" 
+          required="{{true}}"
+          error="{{errors.nickname}}"
+        >
+          <input
+            class="fresh-input"
+            type="text"
+            placeholder="请输入昵称"
+            value="{{formData.nickname}}"
+            data-field="nickname"
+            bindinput="onInput"
+            maxlength="20"
+          />
+        </fresh-form-item>
+
+        <!-- 手机号 -->
+        <fresh-form-item 
+          label="手机号" 
+          error="{{errors.phone}}"
+        >
+          <input
+            class="fresh-input"
+            type="number"
+            placeholder="请输入手机号"
+            value="{{formData.phone}}"
+            data-field="phone"
+            bindinput="onInput"
+            maxlength="11"
+          />
+        </fresh-form-item>
+
+        <!-- 邮箱 -->
+        <fresh-form-item 
+          label="邮箱" 
+          error="{{errors.email}}"
+        >
+          <input
+            class="fresh-input"
+            type="text"
+            placeholder="请输入邮箱地址"
+            value="{{formData.email}}"
+            data-field="email"
+            bindinput="onInput"
+          />
+        </fresh-form-item>
+      </view>
+    </fresh-card>
+
+    <!-- 操作按钮 -->
+    <view class="action-buttons">
+      <fresh-button
+        type="primary"
+        size="large"
+        block="{{true}}"
+        loading="{{saveLoading}}"
+        text="保存修改"
+        bindtap="onSave"
+      />
+      
+      <fresh-button
+        type="secondary"
+        size="large"
+        block="{{true}}"
+        text="重置"
+        custom-class="mt-32"
+        bindtap="onReset"
+      />
+    </view>
+  </view>
+
+  <!-- 提示信息 -->
+  <view class="tips-section">
+    <fresh-card type="info" radius="medium">
+      <view class="tips-content">
+        <view class="tips-title">📝 修改说明</view>
+        <view class="tips-list">
+          <text>• 昵称为必填项，长度为2-20个字符</text>
+          <text>• 手机号和邮箱为选填项</text>
+          <text>• 修改后的信息将在下次登录时生效</text>
+        </view>
+      </view>
+    </fresh-card>
+  </view>
+</view>

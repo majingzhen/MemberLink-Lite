@@ -1,0 +1,220 @@
+/* pages/asset/index/index.wxss */
+
+.asset-container {
+  min-height: 100vh;
+  padding: 32rpx;
+}
+
+/* 未登录状态 */
+.not-login {
+  margin-top: 200rpx;
+}
+
+.not-login-content {
+  text-align: center;
+  padding: 48rpx 32rpx;
+}
+
+.login-icon {
+  font-size: 120rpx;
+  margin-bottom: 32rpx;
+  opacity: 0.8;
+}
+
+.login-title {
+  font-size: 36rpx;
+  font-weight: 500;
+  color: #303133;
+  margin-bottom: 16rpx;
+}
+
+.login-desc {
+  font-size: 28rpx;
+  color: #606266;
+  margin-bottom: 48rpx;
+  line-height: 1.5;
+}
+
+/* 资产概览 */
+.asset-overview {
+  margin-bottom: 48rpx;
+}
+
+.overview-header {
+  text-align: center;
+  margin-bottom: 32rpx;
+}
+
+.header-title {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #303133;
+  margin-bottom: 8rpx;
+}
+
+.header-subtitle {
+  font-size: 24rpx;
+  color: #909399;
+  text-transform: uppercase;
+  letter-spacing: 2rpx;
+}
+
+/* 资产卡片 */
+.asset-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.asset-card-content {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 0;
+}
+
+.asset-icon {
+  font-size: 64rpx;
+  margin-right: 32rpx;
+}
+
+.asset-info {
+  flex: 1;
+}
+
+.asset-label {
+  font-size: 28rpx;
+  color: #606266;
+  margin-bottom: 8rpx;
+}
+
+.asset-value {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #303133;
+  margin-bottom: 8rpx;
+}
+
+.asset-desc {
+  font-size: 24rpx;
+  color: #909399;
+}
+
+/* 快捷操作 */
+.quick-actions {
+  margin-bottom: 48rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #303133;
+  margin-bottom: 24rpx;
+  padding-left: 16rpx;
+  border-left: 8rpx solid #667eea;
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24rpx;
+}
+
+.action-content {
+  text-align: center;
+  padding: 24rpx 16rpx;
+}
+
+.action-icon {
+  font-size: 48rpx;
+  margin-bottom: 16rpx;
+}
+
+.action-title {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #303133;
+  margin-bottom: 8rpx;
+}
+
+.action-desc {
+  font-size: 24rpx;
+  color: #909399;
+}
+
+/* 资产统计 */
+.asset-stats {
+  margin-bottom: 32rpx;
+}
+
+.stats-content {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 0;
+}
+
+.stats-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stats-icon {
+  font-size: 40rpx;
+  margin-right: 16rpx;
+}
+
+.stats-info {
+  text-align: center;
+}
+
+.stats-label {
+  font-size: 24rpx;
+  color: #909399;
+  margin-bottom: 8rpx;
+}
+
+.stats-value {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #303133;
+}
+
+.stats-divider {
+  width: 2rpx;
+  height: 64rpx;
+  background: rgba(0, 0, 0, 0.1);
+  margin: 0 24rpx;
+}
+
+/* 响应式适配 */
+@media (max-width: 375px) {
+  .asset-container {
+    padding: 24rpx;
+  }
+  
+  .actions-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .asset-card-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .asset-icon {
+    margin-right: 0;
+    margin-bottom: 16rpx;
+  }
+  
+  .stats-content {
+    flex-direction: column;
+    gap: 24rpx;
+  }
+  
+  .stats-divider {
+    width: 100%;
+    height: 2rpx;
+    margin: 0;
+  }
+}

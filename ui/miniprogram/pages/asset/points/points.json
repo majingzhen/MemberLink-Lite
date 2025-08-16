@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+    "fresh-card": "/components/fresh-card/index",
+    "fresh-button": "/components/fresh-button/index"
+  },
+  "navigationBarTitleText": "积分记录",
+  "enablePullDownRefresh": true,
+  "onReachBottomDistance": 50
+}
