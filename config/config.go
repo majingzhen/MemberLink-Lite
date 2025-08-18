@@ -45,6 +45,11 @@ func setDefaults() {
 	viper.SetDefault("database.parseTime", true)
 	viper.SetDefault("database.loc", "Local")
 
+	// 数据库连接池配置
+	viper.SetDefault("database.max_idle_conns", 10)
+	viper.SetDefault("database.max_open_conns", 100)
+	viper.SetDefault("database.conn_max_lifetime_hours", 1)
+
 	// Redis配置
 	viper.SetDefault("redis.host", "localhost")
 	viper.SetDefault("redis.port", "6379")
@@ -114,6 +119,11 @@ func setDefaults() {
 	// viper.SetDefault("tenant.tenants.tenant2.name", "Tenant 2")
 	// viper.SetDefault("tenant.tenants.tenant2.domain", "tenant2.example.com")
 	// viper.SetDefault("tenant.tenants.tenant2.enabled", true)
+
+	// CORS配置
+	viper.SetDefault("cors.allowed_origins", "http://localhost:3000,http://localhost:8080")
+	viper.SetDefault("cors.allow_credentials", true)
+	viper.SetDefault("cors.max_age", "12h")
 }
 
 // GetString 获取字符串配置

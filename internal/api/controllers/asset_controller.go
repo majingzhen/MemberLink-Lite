@@ -27,9 +27,9 @@ func NewAssetController(assetService services.AssetService) *AssetController {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Success 200 {object} docs.AssetInfoResponse "获取成功"
-// @Failure 401 {object} docs.ErrorResponse "未授权：Token无效或过期"
-// @Failure 500 {object} docs.ErrorResponse "服务器内部错误"
+// @Success 200 {object} common.APIResponse "获取成功"
+// @Failure 401 {object} common.APIResponse "未授权：Token无效或过期"
+// @Failure 500 {object} common.APIResponse "服务器内部错误"
 // @Router /asset/info [get]
 func (c *AssetController) GetAssetInfo(ctx *gin.Context) {
 	userID := GetUserIDFromContext(ctx)
@@ -54,11 +54,11 @@ func (c *AssetController) GetAssetInfo(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param request body docs.BalanceChangeRequest true "余额变动信息"
-// @Success 200 {object} docs.SuccessResponse "操作成功"
-// @Failure 400 {object} docs.ErrorResponse "参数错误：金额格式错误、变动类型无效、余额不足等"
-// @Failure 401 {object} docs.ErrorResponse "未授权：Token无效或过期"
-// @Failure 500 {object} docs.ErrorResponse "服务器内部错误"
+// @Param request body services.ChangeBalanceRequest true "余额变动信息"
+// @Success 200 {object} common.APIResponse "操作成功"
+// @Failure 400 {object} common.APIResponse "参数错误：金额格式错误、变动类型无效、余额不足等"
+// @Failure 401 {object} common.APIResponse "未授权：Token无效或过期"
+// @Failure 500 {object} common.APIResponse "服务器内部错误"
 // @Router /asset/balance/change [post]
 func (c *AssetController) ChangeBalance(ctx *gin.Context) {
 	userID := GetUserIDFromContext(ctx)
@@ -91,11 +91,11 @@ func (c *AssetController) ChangeBalance(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param request body docs.PointsChangeRequest true "积分变动信息"
-// @Success 200 {object} docs.SuccessResponse "操作成功"
-// @Failure 400 {object} docs.ErrorResponse "参数错误：数量格式错误、变动类型无效、积分不足等"
-// @Failure 401 {object} docs.ErrorResponse "未授权：Token无效或过期"
-// @Failure 500 {object} docs.ErrorResponse "服务器内部错误"
+// @Param request body services.ChangePointsRequest true "积分变动信息"
+// @Success 200 {object} common.APIResponse "操作成功"
+// @Failure 400 {object} common.APIResponse "参数错误：数量格式错误、变动类型无效、积分不足等"
+// @Failure 401 {object} common.APIResponse "未授权：Token无效或过期"
+// @Failure 500 {object} common.APIResponse "服务器内部错误"
 // @Router /asset/points/change [post]
 func (c *AssetController) ChangePoints(ctx *gin.Context) {
 	userID := GetUserIDFromContext(ctx)
@@ -133,10 +133,10 @@ func (c *AssetController) ChangePoints(ctx *gin.Context) {
 // @Param type query string false "变动类型筛选" Enums(recharge,consume,refund,reward,deduct)
 // @Param start_time query string false "开始时间，ISO8601格式" format(date-time)
 // @Param end_time query string false "结束时间，ISO8601格式" format(date-time)
-// @Success 200 {object} docs.BalanceRecordsResponse "获取成功"
-// @Failure 400 {object} docs.ErrorResponse "参数错误：页码无效、时间格式错误等"
-// @Failure 401 {object} docs.ErrorResponse "未授权：Token无效或过期"
-// @Failure 500 {object} docs.ErrorResponse "服务器内部错误"
+// @Success 200 {object} common.APIResponse "获取成功"
+// @Failure 400 {object} common.APIResponse "参数错误：页码无效、时间格式错误等"
+// @Failure 401 {object} common.APIResponse "未授权：Token无效或过期"
+// @Failure 500 {object} common.APIResponse "服务器内部错误"
 // @Router /asset/balance/records [get]
 func (c *AssetController) GetBalanceRecords(ctx *gin.Context) {
 	userID := GetUserIDFromContext(ctx)
@@ -177,10 +177,10 @@ func (c *AssetController) GetBalanceRecords(ctx *gin.Context) {
 // @Param type query string false "变动类型筛选" Enums(obtain,use,expire,reward,deduct)
 // @Param start_time query string false "开始时间，ISO8601格式" format(date-time)
 // @Param end_time query string false "结束时间，ISO8601格式" format(date-time)
-// @Success 200 {object} docs.PointsRecordsResponse "获取成功"
-// @Failure 400 {object} docs.ErrorResponse "参数错误：页码无效、时间格式错误等"
-// @Failure 401 {object} docs.ErrorResponse "未授权：Token无效或过期"
-// @Failure 500 {object} docs.ErrorResponse "服务器内部错误"
+// @Success 200 {object} common.APIResponse "获取成功"
+// @Failure 400 {object} common.APIResponse "参数错误：页码无效、时间格式错误等"
+// @Failure 401 {object} common.APIResponse "未授权：Token无效或过期"
+// @Failure 500 {object} common.APIResponse "服务器内部错误"
 // @Router /asset/points/records [get]
 func (c *AssetController) GetPointsRecords(ctx *gin.Context) {
 	userID := GetUserIDFromContext(ctx)

@@ -1,10 +1,13 @@
 package router
 
 import (
+	"context"
 	"member-link-lite/config"
 	middleware2 "member-link-lite/internal/api/middleware"
 	api2 "member-link-lite/internal/api/router/api"
+	database2 "member-link-lite/internal/database"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -26,10 +29,42 @@ func Init() *gin.Engine {
 
 	// 健康检查
 	r.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"status":  "ok",
-			"message": "MemberLinkLite is running",
-		})
+		health := gin.H{
+			"status":    "ok",
+			"message":   "MemberLinkLite is running",
+			"timestamp": time.Now().Format(time.RFC3339),
+		}
+
+		// 检查数据库连接状态
+		if db := database2.GetDB(); db != nil {
+			sqlDB, err := db.DB()
+			if err == nil {
+				if err := sqlDB.Ping(); err == nil {
+					health["database"] = "connected"
+				} else {
+					health["database"] = "disconnected"
+				}
+			} else {
+				health["database"] = "unavailable"
+			}
+		} else {
+			health["database"] = "not_initialized"
+		}
+
+		// 检查Redis连接状态
+		if rdb := database2.GetRedis(); rdb != nil {
+			ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+			defer cancel()
+			if err := rdb.Ping(ctx).Err(); err == nil {
+				health["redis"] = "connected"
+			} else {
+				health["redis"] = "disconnected"
+			}
+		} else {
+			health["redis"] = "not_initialized"
+		}
+
+		c.JSON(http.StatusOK, health)
 	})
 
 	// Swagger文档

@@ -3,7 +3,7 @@
 # 变量定义
 BINARY_NAME=memberlink-lite
 BUILD_DIR=bin
-MAIN_PATH=cmd/server
+MAIN_PATH=cmd/member-link-lite
 CONFIG_DIR=configs
 
 # Go 相关变量

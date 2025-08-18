@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"fmt"
 	"member-link-lite/config"
 	"member-link-lite/pkg/common"
@@ -100,11 +101,17 @@ func (s *jwtServiceImpl) ValidateToken(tokenString string) (*JWTClaims, error) {
 	})
 
 	if err != nil {
-		if err.Error() == "token is malformed" {
+		// 使用errors.Is检查特定的JWT错误
+		if errors.Is(err, jwt.ErrTokenMalformed) {
 			return nil, common.ErrTokenMalformed
-		} else if err.Error() == "token is expired" {
+		}
+		if errors.Is(err, jwt.ErrTokenExpired) {
 			return nil, common.ErrTokenExpired
-		} else if err.Error() == "token used before valid" {
+		}
+		if errors.Is(err, jwt.ErrTokenNotValidYet) {
+			return nil, common.ErrInvalidToken
+		}
+		if errors.Is(err, jwt.ErrTokenSignatureInvalid) {
 			return nil, common.ErrInvalidToken
 		}
 		return nil, common.ErrInvalidToken

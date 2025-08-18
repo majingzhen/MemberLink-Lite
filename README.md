@@ -67,8 +67,44 @@ CREATE DATABASE memberlink_lite CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 make run
 
 # 或者直接运行
-go run main.go
+go run ./cmd/member-link-lite
 ```
+
+### 环境变量配置
+
+应用支持通过环境变量覆盖配置文件中的设置，常用环境变量：
+
+```bash
+# 服务器配置
+export SERVER_PORT=8080
+export SERVER_MODE=debug
+
+# 数据库配置
+export DATABASE_HOST=localhost
+export DATABASE_PORT=3306
+export DATABASE_USERNAME=root
+export DATABASE_PASSWORD=your_password
+export DATABASE_DBNAME=memberlink_lite
+
+# Redis配置
+export REDIS_HOST=localhost
+export REDIS_PORT=6379
+export REDIS_PASSWORD=your_redis_password
+
+# JWT配置
+export JWT_SECRET=your_jwt_secret_key
+export JWT_ACCESS_TOKEN_TTL=24
+export JWT_REFRESH_TOKEN_TTL=168
+
+# CORS配置
+export CORS_ALLOWED_ORIGINS=http://localhost:3000,https://yourdomain.com
+
+# 日志配置
+export LOG_LEVEL=info
+export LOG_FORMAT=json
+```
+
+**注意**: 环境变量名使用下划线分隔，对应配置文件中的层级结构。例如 `database.host` 对应环境变量 `DATABASE_HOST`。
 
 ### 生成API文档
 

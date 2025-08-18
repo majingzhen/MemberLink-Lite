@@ -35,7 +35,7 @@ func NewAuthController() *AuthController {
 // @Accept json
 // @Produce json
 // @Param request body services.RegisterRequest true "注册信息"
-// @Success 200 {object} common.APIResponse{data=models.User} "注册成功"
+// @Success 200 {object} common.APIResponse{data=object} "注册成功"
 // @Failure 400 {object} common.APIResponse "参数验证失败"
 // @Failure 409 {object} common.APIResponse "用户已存在"
 // @Failure 500 {object} common.APIResponse "服务器内部错误"

@@ -44,9 +44,22 @@ func Init() error {
 	}
 
 	// 设置连接池参数
-	sqlDB.SetMaxIdleConns(10)
-	sqlDB.SetMaxOpenConns(100)
-	sqlDB.SetConnMaxLifetime(time.Hour)
+	maxIdleConns := config.GetInt("database.max_idle_conns")
+	if maxIdleConns <= 0 {
+		maxIdleConns = 10
+	}
+	maxOpenConns := config.GetInt("database.max_open_conns")
+	if maxOpenConns <= 0 {
+		maxOpenConns = 100
+	}
+	connMaxLifetime := config.GetInt("database.conn_max_lifetime_hours")
+	if connMaxLifetime <= 0 {
+		connMaxLifetime = 1
+	}
+
+	sqlDB.SetMaxIdleConns(maxIdleConns)
+	sqlDB.SetMaxOpenConns(maxOpenConns)
+	sqlDB.SetConnMaxLifetime(time.Duration(connMaxLifetime) * time.Hour)
 
 	logger.Info("Database connected successfully")
 	return nil
