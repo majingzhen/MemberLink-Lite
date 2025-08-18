@@ -100,7 +100,9 @@ func (s *userServiceImpl) Register(ctx context.Context, req *RegisterRequest) (*
 		return nil, err
 	}
 
-	// 检查用户名是否已存在
+	tenantID := database.GetTenantIDFromContext(ctx)
+
+	// 检查用户名是否已存在（限定租户）
 	exists, err := s.IsUsernameExists(ctx, req.Username)
 	if err != nil {
 		return nil, err
@@ -109,7 +111,7 @@ func (s *userServiceImpl) Register(ctx context.Context, req *RegisterRequest) (*
 		return nil, common.ErrUserExists
 	}
 
-	// 检查手机号是否已存在
+	// 检查手机号是否已存在（限定租户）
 	exists, err = s.IsPhoneExists(ctx, req.Phone)
 	if err != nil {
 		return nil, err
@@ -118,7 +120,7 @@ func (s *userServiceImpl) Register(ctx context.Context, req *RegisterRequest) (*
 		return nil, common.ErrPhoneExists
 	}
 
-	// 检查邮箱是否已存在
+	// 检查邮箱是否已存在（限定租户）
 	exists, err = s.IsEmailExists(ctx, req.Email)
 	if err != nil {
 		return nil, err
@@ -134,6 +136,8 @@ func (s *userServiceImpl) Register(ctx context.Context, req *RegisterRequest) (*
 		Email:    req.Email,
 		Nickname: req.Nickname,
 	}
+	// 设置租户ID
+	user.TenantID = tenantID
 
 	// 设置默认昵称
 	if user.Nickname == "" {
@@ -236,6 +240,8 @@ func (s *userServiceImpl) UpdateProfile(ctx context.Context, userID uint64, req 
 		return err
 	}
 
+	tenantID := database.GetTenantIDFromContext(ctx)
+
 	// 构建更新数据
 	updates := make(map[string]interface{})
 
@@ -256,10 +262,10 @@ func (s *userServiceImpl) UpdateProfile(ctx context.Context, userID uint64, req 
 		return nil
 	}
 
-	// 执行更新
+	// 执行更新（限定租户）
 	result := s.db.WithContext(ctx).
 		Model(&models.User{}).
-		Where("id = ? AND status = ?", userID, models.StatusActive).
+		Where("id = ? AND status = ? AND tenant_id = ?", userID, models.StatusActive, tenantID).
 		Updates(updates)
 
 	if result.Error != nil {
@@ -297,10 +303,12 @@ func (s *userServiceImpl) ChangePassword(ctx context.Context, userID uint64, req
 		return fmt.Errorf("密码加密失败: %w", err)
 	}
 
-	// 更新密码
+	tenantID := database.GetTenantIDFromContext(ctx)
+
+	// 更新密码（限定租户）
 	result := s.db.WithContext(ctx).
 		Model(&models.User{}).
-		Where("id = ? AND status = ?", userID, models.StatusActive).
+		Where("id = ? AND status = ? AND tenant_id = ?", userID, models.StatusActive, tenantID).
 		Update("password", newUser.Password)
 
 	if result.Error != nil {
@@ -331,10 +339,12 @@ func (s *userServiceImpl) UploadAvatar(ctx context.Context, userID uint64, file 
 	// 这里暂时返回一个示例URL，实际应该上传到OSS并返回真实URL
 	avatarURL := fmt.Sprintf("https://example.com/avatars/%d_%d.jpg", userID, time.Now().Unix())
 
-	// 更新用户头像URL
+	tenantID := database.GetTenantIDFromContext(ctx)
+
+	// 更新用户头像URL（限定租户）
 	result := s.db.WithContext(ctx).
 		Model(&models.User{}).
-		Where("id = ? AND status = ?", userID, models.StatusActive).
+		Where("id = ? AND status = ? AND tenant_id = ?", userID, models.StatusActive, tenantID).
 		Update("avatar", avatarURL)
 
 	if result.Error != nil {
@@ -385,11 +395,11 @@ func (s *userServiceImpl) validateUpdateProfileRequest(ctx context.Context, user
 			return err
 		}
 
-		// 检查邮箱是否被其他用户使用
+		// 检查邮箱是否被其他用户使用（限定租户）
 		var count int64
 		err := s.db.WithContext(ctx).
 			Model(&models.User{}).
-			Where("email = ? AND id != ?", req.Email, userID).
+			Where("email = ? AND id != ? AND tenant_id = ?", req.Email, userID, database.GetTenantIDFromContext(ctx)).
 			Count(&count).Error
 		if err != nil {
 			return err
@@ -405,11 +415,11 @@ func (s *userServiceImpl) validateUpdateProfileRequest(ctx context.Context, user
 			return err
 		}
 
-		// 检查手机号是否被其他用户使用
+		// 检查手机号是否被其他用户使用（限定租户）
 		var count int64
 		err := s.db.WithContext(ctx).
 			Model(&models.User{}).
-			Where("phone = ? AND id != ?", req.Phone, userID).
+			Where("phone = ? AND id != ? AND tenant_id = ?", req.Phone, userID, database.GetTenantIDFromContext(ctx)).
 			Count(&count).Error
 		if err != nil {
 			return err
@@ -427,7 +437,7 @@ func (s *userServiceImpl) GetByUsername(ctx context.Context, username string) (*
 	var user models.User
 	err := s.db.WithContext(ctx).
 		Scopes(models.ScopeActive).
-		Where("username = ?", username).
+		Where("username = ? AND tenant_id = ?", username, database.GetTenantIDFromContext(ctx)).
 		First(&user).Error
 
 	if err != nil {
@@ -445,7 +455,7 @@ func (s *userServiceImpl) GetByPhone(ctx context.Context, phone string) (*models
 	var user models.User
 	err := s.db.WithContext(ctx).
 		Scopes(models.ScopeActive).
-		Where("phone = ?", phone).
+		Where("phone = ? AND tenant_id = ?", phone, database.GetTenantIDFromContext(ctx)).
 		First(&user).Error
 
 	if err != nil {
@@ -463,7 +473,7 @@ func (s *userServiceImpl) GetByEmail(ctx context.Context, email string) (*models
 	var user models.User
 	err := s.db.WithContext(ctx).
 		Scopes(models.ScopeActive).
-		Where("email = ?", email).
+		Where("email = ? AND tenant_id = ?", email, database.GetTenantIDFromContext(ctx)).
 		First(&user).Error
 
 	if err != nil {
@@ -481,7 +491,7 @@ func (s *userServiceImpl) GetByID(ctx context.Context, id uint64) (*models.User,
 	var user models.User
 	err := s.db.WithContext(ctx).
 		Scopes(models.ScopeActive).
-		Where("id = ?", id).
+		Where("id = ? AND tenant_id = ?", id, database.GetTenantIDFromContext(ctx)).
 		First(&user).Error
 
 	if err != nil {
@@ -499,7 +509,7 @@ func (s *userServiceImpl) IsUsernameExists(ctx context.Context, username string)
 	var count int64
 	err := s.db.WithContext(ctx).
 		Model(&models.User{}).
-		Where("username = ?", username).
+		Where("username = ? AND tenant_id = ?", username, database.GetTenantIDFromContext(ctx)).
 		Count(&count).Error
 
 	return count > 0, err
@@ -510,7 +520,7 @@ func (s *userServiceImpl) IsPhoneExists(ctx context.Context, phone string) (bool
 	var count int64
 	err := s.db.WithContext(ctx).
 		Model(&models.User{}).
-		Where("phone = ?", phone).
+		Where("phone = ? AND tenant_id = ?", phone, database.GetTenantIDFromContext(ctx)).
 		Count(&count).Error
 
 	return count > 0, err
@@ -521,7 +531,7 @@ func (s *userServiceImpl) IsEmailExists(ctx context.Context, email string) (bool
 	var count int64
 	err := s.db.WithContext(ctx).
 		Model(&models.User{}).
-		Where("email = ?", email).
+		Where("email = ? AND tenant_id = ?", email, database.GetTenantIDFromContext(ctx)).
 		Count(&count).Error
 
 	return count > 0, err

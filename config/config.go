@@ -83,6 +83,37 @@ func setDefaults() {
 	viper.SetDefault("storage.tencent.app_id", "")
 	viper.SetDefault("storage.tencent.use_https", true)
 	viper.SetDefault("storage.tencent.custom_domain", "")
+
+	// SSO配置
+	viper.SetDefault("sso.enabled", false)
+
+	// 微信SSO配置
+	viper.SetDefault("sso.wechat.enabled", false)
+	viper.SetDefault("sso.wechat.app_id", "")
+	viper.SetDefault("sso.wechat.app_secret", "")
+	viper.SetDefault("sso.wechat.redirect_uri", "")
+
+	// 多租户SSO配置示例
+	// viper.SetDefault("sso.wechat.tenants.tenant1.app_id", "")
+	// viper.SetDefault("sso.wechat.tenants.tenant1.app_secret", "")
+	// viper.SetDefault("sso.wechat.tenants.tenant1.redirect_uri", "")
+	// viper.SetDefault("sso.wechat.tenants.tenant1.enabled", false)
+
+	// 多租户配置
+	viper.SetDefault("tenant.enabled", false)
+
+	// 默认租户配置
+	viper.SetDefault("tenant.default.name", "Default Tenant")
+	viper.SetDefault("tenant.default.domain", "localhost")
+	viper.SetDefault("tenant.default.enabled", true)
+
+	// 多租户配置示例
+	// viper.SetDefault("tenant.tenants.tenant1.name", "Tenant 1")
+	// viper.SetDefault("tenant.tenants.tenant1.domain", "tenant1.example.com")
+	// viper.SetDefault("tenant.tenants.tenant1.enabled", true)
+	// viper.SetDefault("tenant.tenants.tenant2.name", "Tenant 2")
+	// viper.SetDefault("tenant.tenants.tenant2.domain", "tenant2.example.com")
+	// viper.SetDefault("tenant.tenants.tenant2.enabled", true)
 }
 
 // GetString 获取字符串配置

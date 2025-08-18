@@ -35,8 +35,11 @@ func Init() *gin.Engine {
 	// Swagger文档
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	// API路由组
+	// API路由组（应用租户中间件，支持多租户）
 	v1 := r.Group("/api/v1")
+	if config.GetBool("tenant.enabled") {
+		v1.Use(middleware2.TenantMiddleware())
+	}
 	{
 		// 注册各模块路由
 		api2.RegisterAuthRoutes(v1)   // 认证模块路由
@@ -45,6 +48,9 @@ func Init() *gin.Engine {
 		api2.RegisterPointRoutes(v1)  // 积分模块路由
 		api2.RegisterLevelRoutes(v1)  // 等级模块路由
 		api2.RegisterCommonRoutes(v1) // 通用模块路由
+		if config.GetBool("tenant.enabled") {
+			api2.RegisterTenantRoutes(v1) // 多租户管理路由
+		}
 	}
 
 	return r

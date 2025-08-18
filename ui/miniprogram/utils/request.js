@@ -11,6 +11,14 @@ const config = {
   }
 }
 
+function getTenantId() {
+  // 优先从本地存储读取，其次从全局配置，最后回退 default
+  const stored = wx.getStorageSync('tenant_id')
+  if (stored) return stored
+  if (app && app.globalData && app.globalData.tenantId) return app.globalData.tenantId
+  return 'default'
+}
+
 // 请求拦截器
 function requestInterceptor(options) {
   // 添加基础URL
@@ -27,8 +35,8 @@ function requestInterceptor(options) {
     }
   }
 
-  // 添加租户ID（预留多租户支持）
-  options.header['X-Tenant-ID'] = 'default'
+  // 添加租户ID（多租户支持）
+  options.header['X-Tenant-ID'] = getTenantId()
 
   // 显示加载提示
   if (options.showLoading !== false) {
@@ -201,7 +209,7 @@ function uploadFile(url, filePath, name = 'file', formData = {}, options = {}) {
     // 添加认证头
     const token = wx.getStorageSync('token')
     const header = {
-      'X-Tenant-ID': 'default'
+      'X-Tenant-ID': getTenantId()
     }
     if (token) {
       header['Authorization'] = `Bearer ${token}`
