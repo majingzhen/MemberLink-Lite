@@ -216,7 +216,7 @@ const formRules: FormRules = {
 }
 
 // 计算属性
-const userInfo = computed(() => authStore.userInfo)
+const userInfo = computed(() => authStore.user)
 
 // 生命周期
 onMounted(() => {

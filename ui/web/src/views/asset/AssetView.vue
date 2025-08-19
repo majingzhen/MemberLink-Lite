@@ -21,7 +21,7 @@
             <div class="asset-content">
               <div class="asset-amount">
                 <span class="currency">¥</span>
-                <span class="amount">{{ assetInfo?.balance || '0.00' }}</span>
+                <span class="amount">{{ formatBalance(assetInfo?.balance) }}</span>
               </div>
               <div class="asset-actions">
                 <FreshButton type="success" icon="Plus" @click="showRechargeDialog = true">
@@ -72,7 +72,7 @@
               </div>
               <div class="stat-info">
                 <div class="stat-label">今日收入</div>
-                <div class="stat-value">¥{{ todayIncome }}</div>
+                <div class="stat-value">¥{{ formatBalance(todayIncome) }}</div>
               </div>
             </div>
 
@@ -82,7 +82,7 @@
               </div>
               <div class="stat-info">
                 <div class="stat-label">今日支出</div>
-                <div class="stat-value">¥{{ todayExpense }}</div>
+                <div class="stat-value">¥{{ formatBalance(todayExpense) }}</div>
               </div>
             </div>
 
@@ -367,6 +367,12 @@ const formatPointsType = (type: string): string => {
     reward: '奖励'
   }
   return typeMap[type] || type
+}
+
+const formatBalance = (balance?: number) => {
+  if (balance === undefined || balance === null) return '0.00'
+  // 将分转换为元，保留两位小数
+  return (balance / 100).toFixed(2)
 }
 
 const getBalanceTypeColor = (type: string): string => {

@@ -81,7 +81,7 @@
               </div>
               <div class="asset-info">
                 <div class="asset-label">账户余额</div>
-                <div class="asset-value">¥{{ userInfo?.balance || '0.00' }}</div>
+                <div class="asset-value">¥{{ formatBalance(userInfo?.balance) }}</div>
               </div>
             </div>
             <div class="asset-item">
@@ -210,7 +210,7 @@ const previewAvatar = ref('')
 const uploadRef = ref()
 
 // 计算属性
-const userInfo = computed(() => authStore.userInfo)
+const userInfo = computed(() => authStore.user)
 
 // 生命周期
 onMounted(() => {
@@ -251,6 +251,12 @@ const formatPhone = (phone?: string) => {
 const formatDate = (dateStr?: string) => {
   if (!dateStr) return '暂无'
   return new Date(dateStr).toLocaleString('zh-CN')
+}
+
+const formatBalance = (balance?: number) => {
+  if (balance === undefined || balance === null) return '0.00'
+  // 将分转换为元，保留两位小数
+  return (balance / 100).toFixed(2)
 }
 
 const handleAvatarChange = (file: any) => {

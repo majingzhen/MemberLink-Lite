@@ -4,10 +4,10 @@ import { get, post } from '@/utils/request'
 
 // 资产信息
 export interface AssetInfo {
-  balance: string
+  balance: number
   points: number
-  today_income: string
-  today_expense: string
+  today_income: number
+  today_expense: number
   today_points: number
 }
 

@@ -289,7 +289,7 @@ const formRules: FormRules = {
 }
 
 // 计算属性
-const userInfo = computed(() => authStore.userInfo)
+const userInfo = computed(() => authStore.user)
 
 // 方法
 const handleSubmit = async (data: any) => {

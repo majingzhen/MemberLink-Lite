@@ -14,10 +14,10 @@ export const useAssetStore = defineStore('asset', () => {
   const loading = ref(false)
 
   // 计算属性
-  const balance = computed(() => assetInfo.value?.balance || '0.00')
+  const balance = computed(() => assetInfo.value?.balance || 0)
   const points = computed(() => assetInfo.value?.points || 0)
-  const todayIncome = computed(() => assetInfo.value?.today_income || '0.00')
-  const todayExpense = computed(() => assetInfo.value?.today_expense || '0.00')
+  const todayIncome = computed(() => assetInfo.value?.today_income || 0)
+  const todayExpense = computed(() => assetInfo.value?.today_expense || 0)
   const todayPoints = computed(() => assetInfo.value?.today_points || 0)
 
   // 获取资产信息
