@@ -29,13 +29,32 @@
       <!-- 用户信息和操作 -->
       <div class="header-right">
         <div v-if="authStore.isLoggedIn" class="user-section">
-          <!-- 用户信息 -->
-          <div class="user-info">
-            <el-avatar :src="authStore.userInfo?.avatar" :size="36">
-              <el-icon><User /></el-icon>
-            </el-avatar>
-            <span class="username">{{ authStore.userInfo?.nickname || authStore.userInfo?.username }}</span>
-          </div>
+          <!-- 用户菜单 -->
+          <el-dropdown @command="handleCommand" trigger="click">
+            <div class="user-info">
+              <el-avatar :src="authStore.user?.avatar" :size="36">
+                <el-icon><User /></el-icon>
+              </el-avatar>
+              <span class="username">{{ authStore.user?.nickname || authStore.user?.username }}</span>
+              <el-icon class="dropdown-icon"><ArrowDown /></el-icon>
+            </div>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="profile">
+                  <el-icon><User /></el-icon>
+                  个人中心
+                </el-dropdown-item>
+                <el-dropdown-item command="asset">
+                  <el-icon><Wallet /></el-icon>
+                  资产中心
+                </el-dropdown-item>
+                <el-dropdown-item divided command="logout">
+                  <el-icon><SwitchButton /></el-icon>
+                  退出登录
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </div>
         
         <!-- 未登录状态 -->
@@ -53,10 +72,28 @@
 </template>
 
 <script setup lang="ts">
-import { House, User, Wallet } from '@element-plus/icons-vue'
+import { House, User, Wallet, ArrowDown, SwitchButton } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
 
 const authStore = useAuthStore()
+const router = useRouter()
+
+// 处理菜单命令
+const handleCommand = async (command: string) => {
+  switch (command) {
+    case 'profile':
+      router.push('/profile')
+      break
+    case 'asset':
+      router.push('/asset')
+      break
+    case 'logout':
+      await authStore.logout()
+      router.push('/')
+      break
+  }
+}
 </script>
 
 <style scoped>
@@ -143,6 +180,23 @@ const authStore = useAuthStore()
   gap: 8px;
   padding: 8px 12px;
   border-radius: var(--border-radius-base);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.user-info:hover {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.dropdown-icon {
+  font-size: 12px;
+  color: var(--text-secondary);
+  transition: var(--transition-base);
+}
+
+.user-info:hover .dropdown-icon {
+  color: var(--primary-color);
+  transform: rotate(180deg);
 }
 
 .user-avatar {

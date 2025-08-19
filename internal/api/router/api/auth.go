@@ -1,9 +1,7 @@
 package api
 
 import (
-	"member-link-lite/config"
 	"member-link-lite/internal/api/controllers"
-	middleware2 "member-link-lite/internal/api/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,7 +23,6 @@ func RegisterAuthRoutes(rg *gin.RouterGroup) {
 
 		// 用户登出
 		auth.POST("/logout", authController.Logout)
-
 
 	}
 }

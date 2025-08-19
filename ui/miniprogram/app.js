@@ -1,14 +1,19 @@
 // app.js
+const { getTenantConfig, setTenantId } = require('./config/config.js')
+
 App({
   globalData: {
     userInfo: null,
     token: null,
-    baseURL: 'http://localhost:8080/api/v1'
+    tenantId: null
   },
 
   onLaunch() {
     // 小程序启动时执行
     console.log('小程序启动')
+    
+    // 初始化多租户配置
+    this.initTenantConfig()
     
     // 检查登录状态
     this.checkLoginStatus()
@@ -25,6 +30,37 @@ App({
   onHide() {
     // 小程序隐藏时执行
     console.log('小程序隐藏')
+  },
+
+  // 初始化多租户配置
+  initTenantConfig() {
+    const tenantConfig = getTenantConfig()
+    if (tenantConfig.enabled) {
+      // 从启动参数或场景值获取租户ID
+      const launchOptions = wx.getLaunchOptionsSync()
+      const scene = launchOptions.scene
+      const query = launchOptions.query
+      
+      let tenantId = null
+      
+      // 从启动参数获取租户ID
+      if (query && query.tenant_id) {
+        tenantId = query.tenant_id
+      }
+      
+      // 从场景值获取租户ID（如果有的话）
+      if (!tenantId && scene) {
+        // 可以根据场景值解析租户ID
+        console.log('启动场景:', scene)
+      }
+      
+      // 设置租户ID
+      if (tenantId) {
+        setTenantId(tenantId)
+        this.globalData.tenantId = tenantId
+        console.log('设置租户ID:', tenantId)
+      }
+    }
   },
 
   // 检查登录状态

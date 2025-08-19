@@ -1,10 +1,9 @@
 package controllers
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"member-link-lite/internal/api/middleware"
+	"member-link-lite/internal/models"
 	"member-link-lite/internal/services"
 	"member-link-lite/pkg/common"
 )
@@ -106,24 +105,24 @@ func (c *WeChatAuthController) HandleCallback(ctx *gin.Context) {
 	}
 
 	response := WeChatLoginResponse{
-		Token        : tokenResponse.AccessToken,
-		RefreshToken : tokenResponse.RefreshToken,
-		ExpiresIn    : tokenResponse.ExpiresIn,
-		User         : user,
-		IsNewUser    : isNewUser,
-		WeChatInfo   : wechatUserInfo,
+		Token:        tokenResponse.AccessToken,
+		RefreshToken: tokenResponse.RefreshToken,
+		ExpiresIn:    tokenResponse.ExpiresIn,
+		User:         user,
+		IsNewUser:    isNewUser,
+		WeChatInfo:   wechatUserInfo,
 	}
 
 	common.SuccessWithMessage(ctx, "登录成功", response)
 }
 
 // findOrCreateUser 查找或创建用户
-func (c *WeChatAuthController) findOrCreateUser(ctx *gin.Context, wechatUserInfo *services.WeChatUserInfo, tenantID string) (*services.User, bool, error) {
+func (c *WeChatAuthController) findOrCreateUser(ctx *gin.Context, wechatUserInfo *services.WeChatUserInfo, tenantID string) (*models.User, bool, error) {
 	// 生成唯一的用户名（微信 + OpenID）
 	username := "wechat_" + wechatUserInfo.OpenID
 
 	// 尝试查找现有用户
-	existingUser, err := c.userService.GetUserByUsername(ctx.Request.Context(), username)
+	existingUser, err := c.userService.GetByUsername(ctx.Request.Context(), username)
 	if err == nil {
 		// 用户已存在，更新用户信息
 		if wechatUserInfo.Nickname != "" || wechatUserInfo.Avatar != "" {
@@ -166,10 +165,10 @@ type WeChatAuthURLResponse struct {
 
 // WeChatLoginResponse 微信登录响应
 type WeChatLoginResponse struct {
-	Token        string                     `json:"token"`         // 访问令牌
-	RefreshToken string                     `json:"refresh_token"` // 刷新令牌
-	ExpiresIn    int64                      `json:"expires_in"`    // 过期时间（秒）
-	User         *services.User             `json:"user"`          // 用户信息
-	IsNewUser    bool                       `json:"is_new_user"`   // 是否为新用户
-	WeChatInfo   *services.WeChatUserInfo   `json:"wechat_info"`   // 微信用户信息
+	Token        string                   `json:"token"`         // 访问令牌
+	RefreshToken string                   `json:"refresh_token"` // 刷新令牌
+	ExpiresIn    int64                    `json:"expires_in"`    // 过期时间（秒）
+	User         *models.User             `json:"user"`          // 用户信息
+	IsNewUser    bool                     `json:"is_new_user"`   // 是否为新用户
+	WeChatInfo   *services.WeChatUserInfo `json:"wechat_info"`   // 微信用户信息
 }

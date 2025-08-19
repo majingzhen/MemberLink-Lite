@@ -15,7 +15,7 @@ var DB *gorm.DB
 
 // Init 初始化数据库连接
 func Init() error {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=%t&loc=%s",
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=%t&loc=%s&timeout=10s&readTimeout=30s&writeTimeout=30s",
 		config.GetString("database.username"),
 		config.GetString("database.password"),
 		config.GetString("database.host"),
@@ -61,6 +61,12 @@ func Init() error {
 	sqlDB.SetMaxOpenConns(maxOpenConns)
 	sqlDB.SetConnMaxLifetime(time.Duration(connMaxLifetime) * time.Hour)
 
+	// 测试数据库连接
+	if err := sqlDB.Ping(); err != nil {
+		logger.Error("Failed to ping database:", err)
+		return err
+	}
+
 	logger.Info("Database connected successfully")
 	return nil
 }
@@ -68,6 +74,38 @@ func Init() error {
 // GetDB 获取数据库实例
 func GetDB() *gorm.DB {
 	return DB
+}
+
+// Ping 检查数据库连接是否正常
+func Ping() error {
+	if DB == nil {
+		return fmt.Errorf("database not initialized")
+	}
+
+	sqlDB, err := DB.DB()
+	if err != nil {
+		return err
+	}
+
+	return sqlDB.Ping()
+}
+
+// IsConnected 检查数据库是否已连接
+func IsConnected() bool {
+	if DB == nil {
+		return false
+	}
+
+	sqlDB, err := DB.DB()
+	if err != nil {
+		return false
+	}
+
+	if err := sqlDB.Ping(); err != nil {
+		return false
+	}
+
+	return true
 }
 
 // Close 关闭数据库连接

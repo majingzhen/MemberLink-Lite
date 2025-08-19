@@ -4,8 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"member-link-lite/internal/api/controllers"
-	"member-link-lite/internal/services"
 )
 
 // RegisterCommonRoutes 注册通用路由
@@ -118,5 +116,3 @@ func RegisterCommonRoutes(rg *gin.RouterGroup) {
 		})
 	}
 }
-
-

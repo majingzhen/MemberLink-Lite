@@ -29,18 +29,18 @@
               </router-link>
             </div>
 
-            <!-- 已登录状态 -->
-            <div v-else class="user-welcome">
-              <div class="user-greeting">
-                <el-avatar :src="authStore.userInfo?.avatar" :size="60">
-                  <el-icon><UserFilled /></el-icon>
-                </el-avatar>
-                <div class="greeting-text">
-                  <h3>欢迎回来，{{ authStore.userInfo?.nickname || authStore.userInfo?.username }}！</h3>
-                  <p>感谢您使用我们的会员系统</p>
-                </div>
-              </div>
-            </div>
+                         <!-- 已登录状态 -->
+             <div v-else class="user-welcome">
+               <div class="user-greeting">
+                 <el-avatar :src="authStore.user?.avatar" :size="60">
+                   <el-icon><UserFilled /></el-icon>
+                 </el-avatar>
+                 <div class="greeting-text">
+                   <h3>欢迎回来，{{ authStore.user?.nickname || authStore.user?.username }}！</h3>
+                   <p>感谢您使用我们的会员系统</p>
+                 </div>
+               </div>
+             </div>
           </div>
         </div>
       </div>
@@ -81,7 +81,7 @@
 
           <div class="feature-card fresh-card hover-lift">
             <div class="feature-icon">
-              <el-icon size="48" color="#f56c6c"><Shield /></el-icon>
+              <el-icon size="48" color="#f56c6c"><Lock /></el-icon>
             </div>
             <h3 class="feature-title">安全保障</h3>
             <p class="feature-description">
@@ -95,7 +95,7 @@
 </template>
 
 <script setup lang="ts">
-import { UserFilled, Key, Wallet, Setting, Shield } from '@element-plus/icons-vue'
+import { UserFilled, Key, Wallet, Setting, Lock } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()

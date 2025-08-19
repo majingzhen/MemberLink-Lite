@@ -71,6 +71,7 @@ type UpdateProfileRequest struct {
 	Nickname string `json:"nickname" binding:"max=20" example:"新昵称"`
 	Email    string `json:"email" binding:"omitempty,email" example:"newemail@example.com"`
 	Phone    string `json:"phone" binding:"omitempty" example:"13800138001"`
+	Avatar   string `json:"avatar" binding:"omitempty" example:"http://example.com/avatar.jpg"`
 }
 
 // ChangePasswordRequest 修改密码请求
@@ -255,6 +256,10 @@ func (s *userServiceImpl) UpdateProfile(ctx context.Context, userID uint64, req 
 
 	if req.Phone != "" {
 		updates["phone"] = req.Phone
+	}
+
+	if req.Avatar != "" {
+		updates["avatar"] = req.Avatar
 	}
 
 	// 如果没有要更新的字段，直接返回

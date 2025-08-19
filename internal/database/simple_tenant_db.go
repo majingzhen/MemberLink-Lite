@@ -72,3 +72,13 @@ func TenantScopeFromContext(ctx context.Context) func(db *gorm.DB) *gorm.DB {
 	}
 	return TenantScope(tenantID)
 }
+
+// GetTenantIDFromContext 从上下文获取租户ID
+func GetTenantIDFromContext(ctx context.Context) string {
+	if tid := ctx.Value("tenant_id"); tid != nil {
+		if id, ok := tid.(string); ok && id != "" {
+			return id
+		}
+	}
+	return "default"
+}

@@ -1,22 +1,14 @@
 // utils/request.js - 小程序API请求封装
 
 const app = getApp()
+const { getApiConfig, getTenantId, getTenantHeaderName } = require('../config/config.js')
 
 // 请求配置
 const config = {
-  baseURL: 'http://localhost:8080/api/v1',
-  timeout: 10000,
+  ...getApiConfig(),
   header: {
     'Content-Type': 'application/json'
   }
-}
-
-function getTenantId() {
-  // 优先从本地存储读取，其次从全局配置，最后回退 default
-  const stored = wx.getStorageSync('tenant_id')
-  if (stored) return stored
-  if (app && app.globalData && app.globalData.tenantId) return app.globalData.tenantId
-  return 'default'
 }
 
 // 请求拦截器
@@ -36,7 +28,8 @@ function requestInterceptor(options) {
   }
 
   // 添加租户ID（多租户支持）
-  options.header['X-Tenant-ID'] = getTenantId()
+  const headerName = getTenantHeaderName()
+  options.header[headerName] = getTenantId()
 
   // 显示加载提示
   if (options.showLoading !== false) {
@@ -208,8 +201,9 @@ function uploadFile(url, filePath, name = 'file', formData = {}, options = {}) {
   return new Promise((resolve, reject) => {
     // 添加认证头
     const token = wx.getStorageSync('token')
+    const headerName = getTenantHeaderName()
     const header = {
-      'X-Tenant-ID': getTenantId()
+      [headerName]: getTenantId()
     }
     if (token) {
       header['Authorization'] = `Bearer ${token}`

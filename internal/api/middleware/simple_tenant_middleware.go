@@ -2,10 +2,8 @@ package middleware
 
 import (
 	"context"
-	"member-link-lite/config"
-	"strings"
-
 	"github.com/gin-gonic/gin"
+	"member-link-lite/config"
 )
 
 // SimpleTenantMiddleware 简化的租户中间件
@@ -23,12 +21,12 @@ func SimpleTenantMiddleware() gin.HandlerFunc {
 		if headerName == "" {
 			headerName = "X-Tenant-ID" // 默认Header名称
 		}
-		
+
 		queryName := config.GetString("tenant.query_name")
 		if queryName == "" {
 			queryName = "tenant_id" // 默认Query参数名称
 		}
-		
+
 		tenantID := c.GetHeader(headerName)
 		if tenantID == "" {
 			tenantID = c.Query(queryName)
@@ -39,11 +37,11 @@ func SimpleTenantMiddleware() gin.HandlerFunc {
 
 		// 设置到上下文
 		c.Set("tenant_id", tenantID)
-		
+
 		// 传递到标准ctx，方便服务层读取
 		ctx := context.WithValue(c.Request.Context(), "tenant_id", tenantID)
 		c.Request = c.Request.WithContext(ctx)
-		
+
 		c.Next()
 	}
 }
@@ -53,7 +51,7 @@ func isSimpleValidTenantID(tenantID string) bool {
 	if tenantID == "" || len(tenantID) > 50 {
 		return false
 	}
-	
+
 	// 只允许字母、数字、下划线、连字符
 	for _, char := range tenantID {
 		if !((char >= 'a' && char <= 'z') ||
@@ -63,7 +61,7 @@ func isSimpleValidTenantID(tenantID string) bool {
 			return false
 		}
 	}
-	
+
 	return true
 }
 

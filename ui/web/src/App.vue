@@ -17,7 +17,7 @@ const authStore = useAuthStore()
 
 onMounted(() => {
   // 初始化认证状态
-  authStore.initialize()
+  authStore.initAuth()
 })
 </script>
 

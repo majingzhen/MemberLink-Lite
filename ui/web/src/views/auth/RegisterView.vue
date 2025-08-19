@@ -52,14 +52,19 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, reactive } from 'vue'
-    import { useRouter } from 'vue-router'
-    import { ElMessage } from 'element-plus'
-    import type { FormInstance, FormRules } from 'element-plus'
+    import { ref, reactive, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { ElMessage } from 'element-plus'
+import type { FormInstance, FormRules } from 'element-plus'
+import { useAuthStore } from '@/stores/auth'
+import { setTenantId } from '@/utils/request'
+import { showError, showSuccess } from '@/utils/error'
 
     const router = useRouter()
+    const route = useRoute()
+    const authStore = useAuthStore()
     const loading = ref(false)
-    const registerFormRef = ref < FormInstance > ()
+    const registerFormRef = ref<FormInstance>()
 
     const registerForm = reactive({
         username: '',
@@ -100,6 +105,15 @@
         ]
     }
 
+    // 初始化
+    onMounted(() => {
+        // 检查URL参数中的租户ID
+        const tenantId = route.query.tenant_id as string
+        if (tenantId) {
+            setTenantId(tenantId)
+        }
+    })
+
     const handleRegister = async () => {
         if (!registerFormRef.value) return
 
@@ -107,14 +121,19 @@
             await registerFormRef.value.validate()
             loading.value = true
 
-            // 这里应该调用注册API
-            // await authStore.register(registerForm)
+            // 调用注册API
+            await authStore.register({
+                username: registerForm.username,
+                password: registerForm.password,
+                phone: registerForm.phone,
+                email: registerForm.email
+            })
 
-            // 模拟注册成功
-            ElMessage.success('注册成功，请登录')
+            showSuccess('注册成功，请登录')
             router.push('/login')
-        } catch (error) {
+        } catch (error: any) {
             console.error('注册失败:', error)
+            showError(error)
         } finally {
             loading.value = false
         }

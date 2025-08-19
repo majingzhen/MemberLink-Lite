@@ -82,15 +82,15 @@ func Init() *gin.Engine {
 		api2.RegisterAuthRoutes(v1)   // 认证模块路由
 		api2.RegisterUserRoutes(v1)   // 用户模块路由
 		api2.RegisterMemberRoutes(v1) // 会员模块路由
+		api2.RegisterAssetRoutes(v1)  // 资产模块路由
 		api2.RegisterPointRoutes(v1)  // 积分模块路由
 		api2.RegisterLevelRoutes(v1)  // 等级模块路由
 		api2.RegisterCommonRoutes(v1) // 通用模块路由
-		
+
 		// 微信授权登录路由
 		if config.GetBool("wechat.enabled") {
 			api2.RegisterWeChatAuthRoutes(v1) // 微信授权登录路由
 		}
-		
 
 	}
 

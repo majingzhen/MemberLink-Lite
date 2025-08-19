@@ -321,54 +321,15 @@ const exchangePoints = ref('')
 // 快捷充值金额
 const quickAmounts = [10, 50, 100, 200, 500, 1000]
 
-// 模拟统计数据
-const todayIncome = ref('128.50')
-const todayExpense = ref('45.20')
-const todayPoints = ref('85')
+// 统计数据
+const todayIncome = computed(() => assetStore.todayIncome)
+const todayExpense = computed(() => assetStore.todayExpense)
+const todayPoints = computed(() => assetStore.todayPoints)
 const monthlyTransactions = ref('23')
 
-// 模拟最近交易记录
-const recentBalanceRecords = ref([
-  {
-    id: 1,
-    type: 'recharge',
-    amount: '100.00',
-    created_at: '2024-08-16 10:30:00'
-  },
-  {
-    id: 2,
-    type: 'consume',
-    amount: '25.50',
-    created_at: '2024-08-15 16:45:00'
-  },
-  {
-    id: 3,
-    type: 'reward',
-    amount: '10.00',
-    created_at: '2024-08-15 14:20:00'
-  }
-])
-
-const recentPointsRecords = ref([
-  {
-    id: 1,
-    type: 'obtain',
-    quantity: 50,
-    created_at: '2024-08-16 11:00:00'
-  },
-  {
-    id: 2,
-    type: 'use',
-    quantity: 200,
-    created_at: '2024-08-15 15:30:00'
-  },
-  {
-    id: 3,
-    type: 'reward',
-    quantity: 100,
-    created_at: '2024-08-15 09:15:00'
-  }
-])
+// 最近交易记录
+const recentBalanceRecords = computed(() => assetStore.balanceRecords.slice(0, 3))
+const recentPointsRecords = computed(() => assetStore.pointsRecords.slice(0, 3))
 
 // 计算属性
 const assetInfo = computed(() => assetStore.assetInfo)
@@ -492,18 +453,18 @@ const handleRecharge = async () => {
 
   rechargeLoading.value = true
   try {
-    // 这里应该调用充值API
-    await new Promise(resolve => setTimeout(resolve, 1000)) // 模拟API调用
+    // 调用充值API
+    await assetStore.recharge({
+      amount: amount.toString(),
+      payment_method: 'wechat'
+    })
     
-    ElMessage.success(`充值成功！金额：¥${amount}`)
+    ElMessage.success(`充值请求已提交！金额：¥${amount}`)
     showRechargeDialog.value = false
     rechargeAmount.value = ''
-    
-    // 刷新资产信息
-    await assetStore.fetchAssetInfo()
-  } catch (error) {
+  } catch (error: any) {
     console.error('充值失败:', error)
-    ElMessage.error('充值失败，请重试')
+    ElMessage.error(error.message || '充值失败，请重试')
   } finally {
     rechargeLoading.value = false
   }
@@ -523,19 +484,19 @@ const handleExchange = async () => {
 
   exchangeLoading.value = true
   try {
-    // 这里应该调用积分兑换API
-    await new Promise(resolve => setTimeout(resolve, 1000)) // 模拟API调用
+    // 调用积分兑换API
+    await assetStore.exchangePoints({
+      points: points,
+      target_type: 'balance'
+    })
     
     const amount = (points / 100).toFixed(2)
     ElMessage.success(`兑换成功！获得：¥${amount}`)
     showPointsDialog.value = false
     exchangePoints.value = ''
-    
-    // 刷新资产信息
-    await assetStore.fetchAssetInfo()
-  } catch (error) {
+  } catch (error: any) {
     console.error('兑换失败:', error)
-    ElMessage.error('兑换失败，请重试')
+    ElMessage.error(error.message || '兑换失败，请重试')
   } finally {
     exchangeLoading.value = false
   }

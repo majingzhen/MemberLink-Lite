@@ -161,7 +161,7 @@ Page({
       }
 
       // 调用后端微信登录接口
-      const response = await post('/auth/wechat/callback', {
+      const response = await get('/auth/wechat/callback', {
         code: loginRes.code
       })
 
