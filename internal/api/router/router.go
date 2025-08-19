@@ -73,7 +73,9 @@ func Init() *gin.Engine {
 	// API路由组（应用租户中间件，支持多租户）
 	v1 := r.Group("/api/v1")
 	if config.GetBool("tenant.enabled") {
-		v1.Use(middleware2.TenantMiddleware())
+		// 使用简化的租户中间件（推荐用于通用会员框架）
+		v1.Use(middleware2.SimpleTenantMiddleware())
+		// 如需完整功能，可改为：v1.Use(middleware2.TenantMiddleware())
 	}
 	{
 		// 注册各模块路由
@@ -83,9 +85,13 @@ func Init() *gin.Engine {
 		api2.RegisterPointRoutes(v1)  // 积分模块路由
 		api2.RegisterLevelRoutes(v1)  // 等级模块路由
 		api2.RegisterCommonRoutes(v1) // 通用模块路由
-		if config.GetBool("tenant.enabled") {
-			api2.RegisterTenantRoutes(v1) // 多租户管理路由
+		
+		// 微信授权登录路由
+		if config.GetBool("wechat.enabled") {
+			api2.RegisterWeChatAuthRoutes(v1) // 微信授权登录路由
 		}
+		
+
 	}
 
 	return r

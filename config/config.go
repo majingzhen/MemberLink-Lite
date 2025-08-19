@@ -89,23 +89,21 @@ func setDefaults() {
 	viper.SetDefault("storage.tencent.use_https", true)
 	viper.SetDefault("storage.tencent.custom_domain", "")
 
-	// SSO配置
-	viper.SetDefault("sso.enabled", false)
+	// 微信授权登录配置
+	viper.SetDefault("wechat.enabled", false)
+	viper.SetDefault("wechat.app_id", "")
+	viper.SetDefault("wechat.app_secret", "")
+	viper.SetDefault("wechat.redirect_uri", "http://localhost:8080/api/v1/auth/wechat/callback")
 
-	// 微信SSO配置
-	viper.SetDefault("sso.wechat.enabled", false)
-	viper.SetDefault("sso.wechat.app_id", "")
-	viper.SetDefault("sso.wechat.app_secret", "")
-	viper.SetDefault("sso.wechat.redirect_uri", "")
-
-	// 多租户SSO配置示例
-	// viper.SetDefault("sso.wechat.tenants.tenant1.app_id", "")
-	// viper.SetDefault("sso.wechat.tenants.tenant1.app_secret", "")
-	// viper.SetDefault("sso.wechat.tenants.tenant1.redirect_uri", "")
-	// viper.SetDefault("sso.wechat.tenants.tenant1.enabled", false)
+	// 多租户微信配置示例
+	// viper.SetDefault("wechat.tenants.company1.enabled", false)
+	// viper.SetDefault("wechat.tenants.company1.app_id", "")
+	// viper.SetDefault("wechat.tenants.company1.app_secret", "")
 
 	// 多租户配置
 	viper.SetDefault("tenant.enabled", false)
+	viper.SetDefault("tenant.header_name", "X-Tenant-ID")
+	viper.SetDefault("tenant.query_name", "tenant_id")
 
 	// 默认租户配置
 	viper.SetDefault("tenant.default.name", "Default Tenant")

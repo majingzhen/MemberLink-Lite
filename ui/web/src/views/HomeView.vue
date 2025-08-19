@@ -75,7 +75,7 @@
             </div>
             <h3 class="feature-title">系统扩展</h3>
             <p class="feature-description">
-              预留SSO集成和多租户支持，通过代码生成器快速扩展功能模块
+              微信授权登录和多租户支持，通过代码生成器快速扩展功能模块
             </p>
           </div>
 

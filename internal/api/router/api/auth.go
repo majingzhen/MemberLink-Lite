@@ -26,22 +26,6 @@ func RegisterAuthRoutes(rg *gin.RouterGroup) {
 		// 用户登出
 		auth.POST("/logout", authController.Logout)
 
-		// SSO 路由（独立开关）
-		if config.GetBool("sso.enabled") {
-			ssoService := controllers.MustInitSSOService()
-			userService := controllers.MustInitUserService()
-			jwtService := controllers.MustInitJWTService()
-			ssoController := controllers.NewSSOController(ssoService, userService, jwtService)
 
-			sso := auth.Group("/sso")
-			if config.GetBool("tenant.enabled") {
-				sso.Use(middleware2.TenantMiddleware())
-			}
-			{
-				sso.GET("/types", ssoController.GetEnabledSSOTypes)
-				sso.GET("/:sso_type/auth", ssoController.GetAuthURL)
-				sso.GET("/:sso_type/callback", ssoController.HandleCallback)
-			}
-		}
 	}
 }

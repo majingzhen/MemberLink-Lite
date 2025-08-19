@@ -72,63 +72,40 @@ storage:
     use_https: true
     custom_domain: ""
 
-# SSO配置
-sso:
-  enabled: false  # 全局SSO开关
+# 微信授权登录配置（用于微信小程序）
+wechat:
+  enabled: false           # 微信授权登录开关
+  app_id: ""              # 微信应用ID
+  app_secret: ""          # 微信应用密钥
+  redirect_uri: "http://localhost:8080/api/v1/auth/wechat/callback"  # 回调地址
   
-  # 微信SSO配置
-  wechat:
-    enabled: false
-    app_id: ""
-    app_secret: ""
-    redirect_uri: "http://localhost:8080/api/v1/auth/sso/wechat/callback"
-    # 多租户配置：按租户覆盖上述配置
-    tenants: {}
-    
-    # 多租户配置示例（可选）
-    # tenants:
-    #   tenant1:
-    #     enabled: true
-    #     app_id: "wx1234567890abcdef"
-    #     app_secret: "your_tenant1_app_secret"
-    #     redirect_uri: "http://tenant1.example.com/auth/callback"
-    #   tenant2:
-    #     enabled: true
-    #     app_id: "wx0987654321fedcba"
-    #     app_secret: "your_tenant2_app_secret"
-    #     redirect_uri: "http://tenant2.example.com/auth/callback"
+  # 多租户微信配置示例（仅在tenant.enabled=true时生效）
+  # tenants:
+  #   company1:
+  #     enabled: true
+  #     app_id: "wx1234567890abcdef"
+  #     app_secret: "your_company1_app_secret"
+  #   company2:
+  #     enabled: true
+  #     app_id: "wx0987654321fedcba"
+  #     app_secret: "your_company2_app_secret"
 
-# 多租户配置
+# 多租户配置（简化版）
 tenant:
-  enabled: false  # 多租户功能开关
+  enabled: false  # 多租户功能开关，false=单租户模式，true=多租户模式
+  header_name: "X-Tenant-ID"  # 自定义Header名称
+  query_name: "tenant_id"     # 自定义Query参数名称
   
-  # 默认租户配置
-  default:
-    name: "Default Tenant"
-    domain: "localhost"
-    enabled: true
-    settings:
-      max_users: 1000
-      storage_limit: "10GB"
-  
-  # 其他租户配置示例（可选）
+  # 租户配置示例（仅在enabled=true时生效）
   # tenants:
   #   tenant1:
-  #     name: "Tenant 1"
+  #     name: "租户1"
   #     domain: "tenant1.example.com"
   #     enabled: true
-  #     settings:
-  #       max_users: 500
-  #       storage_limit: "5GB"
-  #       custom_theme: "blue"
   #   tenant2:
-  #     name: "Tenant 2"
+  #     name: "租户2" 
   #     domain: "tenant2.example.com"
   #     enabled: true
-  #     settings:
-  #       max_users: 200
-  #       storage_limit: "2GB"
-  #       custom_theme: "green"
 
 # CORS配置
 # 环境变量: CORS_ALLOWED_ORIGINS, CORS_ALLOW_CREDENTIALS, CORS_MAX_AGE

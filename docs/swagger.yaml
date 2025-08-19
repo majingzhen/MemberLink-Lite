@@ -36,9 +36,6 @@ definitions:
       auth_url:
         description: 授权URL
         type: string
-      sso_type:
-        description: SSO类型
-        type: string
     type: object
   controllers.CreateTenantRequest:
     properties:
@@ -64,28 +61,7 @@ definitions:
     required:
     - refresh_token
     type: object
-  controllers.SSOLoginResponse:
-    properties:
-      expires_in:
-        description: 过期时间（秒）
-        type: integer
-      is_new_user:
-        description: 是否为新用户
-        type: boolean
-      refresh_token:
-        description: 刷新令牌
-        type: string
-      sso_type:
-        description: SSO类型
-        type: string
-      token:
-        description: 访问令牌
-        type: string
-      user:
-        allOf:
-        - $ref: '#/definitions/models.User'
-        description: 用户信息
-    type: object
+
   controllers.SetTenantSettingRequest:
     properties:
       value: {}
@@ -1157,129 +1133,9 @@ paths:
       summary: 用户注册
       tags:
       - 认证管理
-  /auth/sso/{sso_type}/auth:
-    get:
-      consumes:
-      - application/json
-      description: 获取指定SSO提供商的授权登录URL
-      parameters:
-      - description: SSO类型
-        enum:
-        - wechat
-        in: path
-        name: sso_type
-        required: true
-        type: string
-      - description: 回调地址
-        in: query
-        name: redirect_uri
-        type: string
-      - default: default
-        description: 租户ID
-        in: header
-        name: X-Tenant-ID
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 获取成功
-          schema:
-            allOf:
-            - $ref: '#/definitions/common.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/controllers.AuthURLResponse'
-              type: object
-        "400":
-          description: 参数错误
-          schema:
-            $ref: '#/definitions/common.APIResponse'
-        "404":
-          description: SSO类型不存在
-          schema:
-            $ref: '#/definitions/common.APIResponse'
-      summary: 获取SSO授权URL
-      tags:
-      - SSO认证
-  /auth/sso/{sso_type}/callback:
-    get:
-      consumes:
-      - application/json
-      description: 处理SSO提供商的授权回调，完成登录流程
-      parameters:
-      - description: SSO类型
-        enum:
-        - wechat
-        in: path
-        name: sso_type
-        required: true
-        type: string
-      - description: 授权码
-        in: query
-        name: code
-        required: true
-        type: string
-      - description: 状态参数（租户ID）
-        in: query
-        name: state
-        type: string
-      - default: default
-        description: 租户ID
-        in: header
-        name: X-Tenant-ID
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 登录成功
-          schema:
-            allOf:
-            - $ref: '#/definitions/common.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/controllers.SSOLoginResponse'
-              type: object
-        "400":
-          description: 参数错误
-          schema:
-            $ref: '#/definitions/common.APIResponse'
-        "401":
-          description: 授权失败
-          schema:
-            $ref: '#/definitions/common.APIResponse'
-      summary: 处理SSO回调
-      tags:
-      - SSO认证
-  /auth/sso/types:
-    get:
-      consumes:
-      - application/json
-      description: 获取当前租户启用的SSO登录方式列表
-      parameters:
-      - default: default
-        description: 租户ID
-        in: header
-        name: X-Tenant-ID
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 获取成功
-          schema:
-            allOf:
-            - $ref: '#/definitions/common.APIResponse'
-            - properties:
-                data:
-                  items:
-                    type: string
-                  type: array
-              type: object
-      summary: 获取启用的SSO类型
-      tags:
-      - SSO认证
+
+
+
   /tenant/current:
     get:
       consumes:

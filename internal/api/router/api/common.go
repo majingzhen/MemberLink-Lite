@@ -119,24 +119,4 @@ func RegisterCommonRoutes(rg *gin.RouterGroup) {
 	}
 }
 
-// RegisterTenantRoutes 注册租户管理路由
-func RegisterTenantRoutes(rg *gin.RouterGroup) {
-	manager := services.NewTenantConfigManager()
-	_ = manager.LoadFromViper()
-	ctrl := controllers.NewTenantController(manager)
 
-	tenant := rg.Group("/tenant")
-	{
-		tenant.GET("/current", ctrl.GetCurrentTenant)
-		tenant.GET("/settings/:key", ctrl.GetTenantSetting)
-		tenant.PUT("/settings/:key", ctrl.SetTenantSetting)
-	}
-
-	admin := rg.Group("/admin/tenants")
-	{
-		admin.GET("", ctrl.GetAllTenants)
-		admin.POST("", ctrl.CreateTenant)
-		admin.PUT(":tenant_id", ctrl.UpdateTenant)
-		admin.DELETE(":tenant_id", ctrl.DeleteTenant)
-	}
-}
