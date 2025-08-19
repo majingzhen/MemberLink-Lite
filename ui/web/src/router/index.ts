@@ -63,4 +63,34 @@ const router = createRouter({
   routes
 })
 
+// 路由守卫
+router.beforeEach((to, from, next) => {
+  // 从 localStorage 获取 token 来判断登录状态
+  const token = localStorage.getItem('token')
+  const isLoggedIn = !!token
+
+  // 检查路由是否需要认证
+  if (to.meta.requiresAuth) {
+    if (!isLoggedIn) {
+      // 未登录，跳转到登录页
+      console.log('未登录，跳转到登录页，原始路径:', to.fullPath)
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath } // 保存原始路径，登录后可以跳转回来
+      })
+      return
+    }
+  }
+
+  // 如果已登录用户访问登录/注册页，跳转到首页
+  if (to.meta.hideForAuth && isLoggedIn) {
+    console.log('已登录用户访问登录页，跳转到首页')
+    next({ path: '/' })
+    return
+  }
+
+  console.log('路由守卫通过，目标路径:', to.path, '登录状态:', isLoggedIn)
+  next()
+})
+
 export default router

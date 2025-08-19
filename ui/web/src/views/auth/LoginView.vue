@@ -165,7 +165,22 @@ const handlePasswordLogin = async () => {
     console.log('开始调用登录API', loginForm)
     await authStore.login(loginForm)
     console.log('登录成功')
-    router.push('/')
+    
+    // 等待一下让状态更新
+    await new Promise(resolve => setTimeout(resolve, 100))
+    
+    // 检查是否有重定向路径
+    const redirect = route.query.redirect as string
+    console.log('重定向路径:', redirect)
+    console.log('当前路由查询参数:', route.query)
+    
+    if (redirect) {
+      console.log('准备跳转到:', redirect)
+      await router.push(redirect)
+    } else {
+      console.log('准备跳转到首页')
+      await router.push('/')
+    }
   } catch (error: any) {
     console.error('登录失败:', error)
     showError(error)
@@ -199,7 +214,17 @@ const handleWechatCallback = async (code: string, state?: string) => {
     loading.value = true
     
     await authStore.wechatLogin(code)
-    router.push('/')
+    
+    // 等待一下让状态更新
+    await new Promise(resolve => setTimeout(resolve, 100))
+    
+    // 检查是否有重定向路径
+    const redirect = route.query.redirect as string
+    if (redirect) {
+      await router.push(redirect)
+    } else {
+      await router.push('/')
+    }
   } catch (error: any) {
     console.error('微信回调处理失败:', error)
     showError(error)
