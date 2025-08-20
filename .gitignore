@@ -53,3 +53,5 @@ config.prod.yaml
 
 # Air live reload
 tmp/
+
+.cursor
