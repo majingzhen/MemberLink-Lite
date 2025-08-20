@@ -513,9 +513,9 @@ A: 检查存储配置是否正确，确保上传目录有写入权限，或检�
 
 ## 📞 联系方式
 
-- 项目主页: [https://github.com/majingzhen/MemberLink-Lite]
-- 问题反馈: [Issues]
-- 邮箱: [matutoo@qq.com]
+- 项目主页: [[MemberLink-Lite](https://github.com/majingzhen/MemberLink-Lite)]
+- 问题反馈: [[Issues](https://github.com/majingzhen/MemberLink-Lite/issues)]
+- 邮箱: [[matutoo@qq.com](matutoo@qq.com)]
 
 ---
 
