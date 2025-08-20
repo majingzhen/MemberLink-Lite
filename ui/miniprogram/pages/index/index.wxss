@@ -1,269 +1,253 @@
 /* pages/index/index.wxss */
 
 .container {
-  padding: 40rpx;
   min-height: 100vh;
+  background: #ffffff;
+  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+}
+
+/* 顶部栏 */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32rpx;
+  border-bottom: 2rpx solid #e5e7eb;
   background: #ffffff;
 }
 
-/* 欢迎区域 */
-.welcome-section {
-  margin-bottom: 48rpx;
+.header-time {
+  font-size: 28rpx;
+  color: #6b7280;
 }
 
-.welcome-content {
-  text-align: center;
-}
-
-.welcome-header {
-  margin-bottom: 40rpx;
-}
-
-.welcome-title {
-  font-size: 48rpx;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 16rpx;
-}
-
-.welcome-subtitle {
+.header-title {
   font-size: 32rpx;
-  color: var(--text-secondary);
+  font-weight: 600;
+  color: #1f2937;
 }
 
-/* 用户欢迎信息 */
-.user-welcome {
+.header-actions {
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin-top: 32rpx;
+  gap: 32rpx;
 }
 
-.user-avatar-container {
-  position: relative;
-  margin-right: 32rpx;
+.header-icon {
+  font-size: 32rpx;
+  color: #6b7280;
+}
+
+/* 主要内容区 */
+.main-content {
+  padding: 32rpx;
+  padding-bottom: 48rpx;
+}
+
+.page-title {
+  font-size: 48rpx;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 48rpx;
+  color: #1f2937;
+}
+
+/* 用户信息卡片 */
+.user-card {
+  background: #eff6ff;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  margin-bottom: 48rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.user-info-section {
+  display: flex;
+  align-items: center;
+  margin-bottom: 32rpx;
 }
 
 .user-avatar {
-  width: 120rpx;
-  height: 120rpx;
-  border-radius: 60rpx;
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
+  margin-right: 24rpx;
+  object-fit: cover;
 }
 
-.user-info {
-  text-align: left;
+.user-details {
+  flex: 1;
 }
 
-.user-nickname {
-  font-size: 40rpx;
+.user-greeting {
+  font-size: 36rpx;
   font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 12rpx;
+  color: #1f2937;
+  margin-bottom: 8rpx;
 }
 
-.user-desc {
-  font-size: 32rpx;
-  color: var(--text-secondary);
-  margin-bottom: 24rpx;
+.user-subtitle {
+  font-size: 28rpx;
+  color: #6b7280;
 }
 
 .user-stats {
   display: flex;
-  align-items: center;
-  gap: 48rpx;
+  justify-content: space-around;
+  text-align: center;
 }
 
 .stat-item {
-  text-align: center;
+  flex: 1;
 }
 
 .stat-value {
   font-size: 36rpx;
-  font-weight: 600;
-  color: var(--text-primary);
+  font-weight: 700;
   margin-bottom: 8rpx;
+}
+
+.stat-value.balance {
+  color: #2563eb;
+}
+
+.stat-value.points {
+  color: #f97316;
 }
 
 .stat-label {
   font-size: 28rpx;
-  color: var(--text-secondary);
+  color: #6b7280;
 }
 
-/* 登录提示 */
-.login-prompt {
-  margin-top: 32rpx;
+/* 功能菜单 */
+.menu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32rpx;
+  margin-bottom: 48rpx;
 }
 
-.prompt-text {
+.menu-item {
+  background: #ffffff;
+  padding: 32rpx;
+  border-radius: 24rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  transition: all 0.2s ease;
+}
+
+.menu-item:active {
+  transform: scale(0.98);
+  background: #f9fafb;
+}
+
+.menu-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.menu-icon.blue {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.menu-icon.orange {
+  background: #fed7aa;
+  color: #f97316;
+}
+
+.menu-icon.gray {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.menu-icon.green {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.icon-text {
   font-size: 32rpx;
-  color: var(--text-secondary);
+}
+
+.menu-content {
+  flex: 1;
+}
+
+.menu-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 8rpx;
+}
+
+.menu-desc {
+  font-size: 24rpx;
+  color: #6b7280;
+}
+
+/* 登录区域 */
+.login-section {
+  text-align: center;
+  margin-top: 48rpx;
+}
+
+.login-prompt {
+  font-size: 32rpx;
+  color: #6b7280;
   margin-bottom: 40rpx;
 }
 
 .login-buttons {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 24rpx;
+  align-items: center;
 }
 
 .login-btn {
   width: 400rpx;
-  background: var(--primary-color);
-  color: white;
-  border: none;
+  height: 88rpx;
   border-radius: 16rpx;
-  padding: 32rpx;
-  font-size: 36rpx;
+  font-size: 32rpx;
   font-weight: 500;
-  min-height: 88rpx;
-  line-height: 24rpx;
-  transition: all 0.3s ease;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
 }
 
 .login-btn::after {
   border: none;
 }
 
-.login-btn:active {
-  transform: scale(0.98);
-  opacity: 0.9;
+.login-btn.primary {
+  background: #2563eb;
+  color: #ffffff;
 }
 
-.wechat-btn {
-  width: 400rpx;
+.login-btn.primary:active {
+  background: #1d4ed8;
+  transform: scale(0.98);
+}
+
+.login-btn.wechat {
   background: #07c160;
-  color: white;
-  border: none;
-  border-radius: 16rpx;
-  padding: 32rpx;
-  font-size: 36rpx;
-  font-weight: 500;
-  min-height: 88rpx;
-  line-height: 24rpx;
-  transition: all 0.3s ease;
+  color: #ffffff;
 }
 
-.wechat-btn::after {
-  border: none;
-}
-
-.wechat-btn:active {
+.login-btn.wechat:active {
+  background: #059669;
   transform: scale(0.98);
-  opacity: 0.9;
-}
-
-/* 功能菜单区域 */
-.menu-section {
-  margin-bottom: 48rpx;
-}
-
-.section-header {
-  margin-bottom: 32rpx;
-}
-
-.section-title {
-  font-size: 40rpx;
-  font-weight: 600;
-  color: var(--text-primary);
-  padding-left: 16rpx;
-  border-left: 8rpx solid var(--primary-color);
-}
-
-.menu-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32rpx;
-}
-
-.menu-item {
-  text-align: center;
-  padding: 40rpx 32rpx;
-  transition: all 0.3s ease;
-}
-
-.menu-item:active {
-  transform: scale(0.98);
-}
-
-.menu-icon {
-  font-size: 64rpx;
-  margin-bottom: 24rpx;
-}
-
-.menu-title {
-  font-size: 36rpx;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 12rpx;
-}
-
-.menu-desc {
-  font-size: 28rpx;
-  color: var(--text-secondary);
-}
-
-/* 快捷操作区域 */
-.quick-actions {
-  margin-bottom: 48rpx;
-}
-
-.actions-content {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 40rpx 32rpx;
-}
-
-.action-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: all 0.3s ease;
-  padding: 24rpx;
-  border-radius: 16rpx;
-}
-
-.action-item:active {
-  transform: scale(0.95);
-  background: #f8f9fa;
-}
-
-.action-icon {
-  font-size: 48rpx;
-  margin-bottom: 16rpx;
-}
-
-.action-text {
-  font-size: 28rpx;
-  color: var(--text-regular);
-  font-weight: 500;
-}
-
-/* 调试信息 */
-.debug-info {
-  margin-top: 48rpx;
-  padding: 32rpx;
-  background: #f8f9fa;
-  border-radius: 16rpx;
-}
-
-.debug-title {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 24rpx;
-}
-
-.debug-content {
-  display: flex;
-  flex-direction: column;
-  gap: 12rpx;
-}
-
-.debug-content text {
-  font-size: 28rpx;
-  color: var(--text-secondary);
 }
 
 /* 响应式适配 */
@@ -272,18 +256,17 @@
     grid-template-columns: 1fr;
   }
   
-  .welcome-title {
+  .page-title {
     font-size: 40rpx;
   }
   
   .user-avatar {
-    width: 100rpx;
-    height: 100rpx;
-    border-radius: 50rpx;
+    width: 64rpx;
+    height: 64rpx;
+    border-radius: 32rpx;
   }
   
-  .login-btn,
-  .wechat-btn {
+  .login-btn {
     width: 320rpx;
   }
 }

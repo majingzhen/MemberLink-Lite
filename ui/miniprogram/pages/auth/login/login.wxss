@@ -1,60 +1,50 @@
 /* pages/auth/login/login.wxss */
 
-.login-container {
+.container {
   min-height: 100vh;
-  padding: 64rpx 40rpx 40rpx;
-  background: #ffffff;
+  background: #f3f4f6;
+  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  display: flex;
+  flex-direction: column;
 }
 
-/* 头部区域 */
-.login-header {
-  text-align: center;
-  margin-bottom: 64rpx;
+/* 主要内容区 */
+.main-content {
+  flex: 1;
+  padding: 48rpx 32rpx;
 }
 
-.logo-section {
-  color: var(--text-primary);
-}
-
-.logo {
-  font-size: 120rpx;
-  margin-bottom: 32rpx;
-}
-
-.title {
+.page-title {
   font-size: 48rpx;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 16rpx;
-}
-
-.subtitle {
-  font-size: 32rpx;
-  color: var(--text-secondary);
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 48rpx;
+  color: #1f2937;
 }
 
 /* 登录方式切换 */
 .login-tabs {
   display: flex;
-  background: #f8f9fa;
-  border-radius: 16rpx;
+  background: #ffffff;
+  border-radius: 24rpx;
   padding: 8rpx;
   margin-bottom: 48rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
 }
 
 .tab-item {
   flex: 1;
   text-align: center;
   padding: 24rpx;
-  border-radius: 12rpx;
+  border-radius: 16rpx;
   font-size: 32rpx;
-  color: var(--text-secondary);
-  transition: all 0.3s ease;
+  color: #6b7280;
+  transition: all 0.2s ease;
   font-weight: 500;
 }
 
 .tab-item.active {
-  background: var(--primary-color);
+  background: #2563eb;
   color: white;
   font-weight: 600;
 }
@@ -69,52 +59,51 @@
 }
 
 .form-item {
-  margin-bottom: 40rpx;
+  margin-bottom: 32rpx;
 }
 
 .input-wrapper {
   display: flex;
   align-items: center;
-  background: #f8f9fa;
-  border: 2rpx solid transparent;
+  background: #ffffff;
+  border: 2rpx solid #e5e7eb;
   border-radius: 16rpx;
   padding: 32rpx 40rpx;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   min-height: 88rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
 }
 
 .input-wrapper:focus-within {
-  border-color: var(--primary-color);
-  background: #ffffff;
-  box-shadow: 0 0 0 8rpx rgba(44, 62, 80, 0.1);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 8rpx rgba(37, 99, 235, 0.1);
 }
 
 .input-wrapper.error {
-  border-color: var(--danger-color);
-  background: #ffffff;
-  box-shadow: 0 0 0 8rpx rgba(231, 76, 60, 0.1);
+  border-color: #dc2626;
+  box-shadow: 0 0 0 8rpx rgba(220, 38, 38, 0.1);
 }
 
 .input-icon {
-  font-size: 36rpx;
+  font-size: 32rpx;
   margin-right: 20rpx;
-  color: var(--text-secondary);
+  color: #6b7280;
 }
 
 .form-input {
   flex: 1;
-  font-size: 36rpx;
-  color: var(--text-primary);
+  font-size: 32rpx;
+  color: #1f2937;
   min-height: 24rpx;
   line-height: 24rpx;
   background: transparent;
 }
 
 .input-action {
-  font-size: 36rpx;
-  color: var(--text-secondary);
+  font-size: 32rpx;
+  color: #6b7280;
   padding: 8rpx;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .input-action:active {
@@ -122,21 +111,21 @@
 }
 
 .error-text {
-  color: var(--danger-color);
+  color: #dc2626;
   font-size: 28rpx;
-  margin-top: 16rpx;
+  margin-top: 12rpx;
   margin-left: 20rpx;
 }
 
 .forgot-password {
   text-align: right;
-  margin-bottom: 40rpx;
+  margin-bottom: 32rpx;
 }
 
 .forgot-password text {
-  color: var(--primary-color);
+  color: #2563eb;
   font-size: 28rpx;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .forgot-password text:active {
@@ -144,31 +133,29 @@
 }
 
 /* 登录按钮 */
-.login-button {
+.login-btn {
   width: 100%;
-  background: var(--primary-color);
+  background: #2563eb;
   color: white;
   border: none;
   border-radius: 16rpx;
-  padding: 32rpx;
-  font-size: 36rpx;
+  padding: 32rpx 64rpx;
+  font-size: 32rpx;
   font-weight: 500;
-  min-height: 88rpx;
-  line-height: 24rpx;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
-.login-button::after {
+.login-btn::after {
   border: none;
 }
 
-.login-button:active {
+.login-btn:active {
+  background: #1d4ed8;
   transform: scale(0.98);
-  opacity: 0.9;
 }
 
-.login-button.loading {
-  background: #bdc3c7;
+.login-btn.loading {
+  background: #9ca3af;
 }
 
 /* 微信登录 */
@@ -189,57 +176,55 @@
 .wechat-title {
   font-size: 40rpx;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #1f2937;
   margin-bottom: 20rpx;
 }
 
 .wechat-desc {
   font-size: 32rpx;
-  color: var(--text-secondary);
+  color: #6b7280;
   margin-bottom: 48rpx;
 }
 
 /* 微信登录按钮 */
-.wechat-button {
+.wechat-btn {
   width: 100%;
   background: #07c160;
   color: white;
   border: none;
   border-radius: 16rpx;
-  padding: 32rpx;
-  font-size: 36rpx;
+  padding: 32rpx 64rpx;
+  font-size: 32rpx;
   font-weight: 500;
-  min-height: 88rpx;
-  line-height: 24rpx;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
-.wechat-button::after {
+.wechat-btn::after {
   border: none;
 }
 
-.wechat-button:active {
+.wechat-btn:active {
+  background: #059669;
   transform: scale(0.98);
-  opacity: 0.9;
 }
 
-.wechat-button.loading {
-  background: #bdc3c7;
+.wechat-btn.loading {
+  background: #9ca3af;
 }
 
 /* 注册提示 */
 .register-tip {
   text-align: center;
-  margin-bottom: 40rpx;
-  color: var(--text-secondary);
+  margin-bottom: 32rpx;
+  color: #6b7280;
   font-size: 32rpx;
 }
 
 .register-link {
-  color: var(--primary-color) !important;
+  color: #2563eb !important;
   font-weight: 600;
   margin-left: 8rpx;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .register-link:active {
@@ -249,15 +234,15 @@
 /* 协议提示 */
 .agreement-tip {
   text-align: center;
-  color: var(--text-light);
+  color: #9ca3af;
   font-size: 28rpx;
   line-height: 1.5;
 }
 
 .agreement-link {
-  color: var(--text-secondary) !important;
+  color: #6b7280 !important;
   text-decoration: underline;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .agreement-link:active {
@@ -266,15 +251,11 @@
 
 /* 响应式适配 */
 @media (max-width: 375px) {
-  .login-container {
-    padding: 48rpx 32rpx 32rpx;
+  .main-content {
+    padding: 32rpx 24rpx;
   }
   
-  .logo {
-    font-size: 100rpx;
-  }
-  
-  .title {
+  .page-title {
     font-size: 40rpx;
   }
   
@@ -284,6 +265,6 @@
   }
   
   .form-input {
-    font-size: 32rpx;
+    font-size: 28rpx;
   }
 }

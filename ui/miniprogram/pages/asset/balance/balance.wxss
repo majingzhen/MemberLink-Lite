@@ -1,8 +1,25 @@
 /* pages/asset/balance/balance.wxss */
 
-.balance-container {
+.container {
   min-height: 100vh;
-  padding: 32rpx;
+  background: #f3f4f6;
+  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 主要内容区 */
+.main-content {
+  flex: 1;
+  padding: 48rpx 32rpx;
+}
+
+.page-title {
+  font-size: 48rpx;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 48rpx;
+  color: #1f2937;
 }
 
 /* 筛选区域 */
@@ -10,8 +27,15 @@
   margin-bottom: 32rpx;
 }
 
+.filter-card {
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
 .filter-content {
-  padding: 16rpx 0;
+  padding: 0;
 }
 
 .filter-item {
@@ -24,24 +48,31 @@
 
 .filter-label {
   font-size: 28rpx;
-  color: #606266;
+  color: #6b7280;
   margin-bottom: 12rpx;
+  font-weight: 500;
 }
 
 .picker-display {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(255, 255, 255, 0.8);
-  border: 2rpx solid #e4e7ed;
-  border-radius: 24rpx;
+  background: #f9fafb;
+  border: 2rpx solid #e5e7eb;
+  border-radius: 16rpx;
   padding: 24rpx 32rpx;
   font-size: 32rpx;
-  color: #303133;
+  color: #1f2937;
+  transition: all 0.2s ease;
+}
+
+.picker-display:active {
+  background: #f3f4f6;
+  border-color: #2563eb;
 }
 
 .picker-arrow {
-  color: #c0c4cc;
+  color: #9ca3af;
   font-size: 32rpx;
   font-weight: bold;
   transform: rotate(90deg);
@@ -61,6 +92,26 @@
   text-align: center;
 }
 
+.clear-btn {
+  background: #6b7280;
+  color: #ffffff;
+  border: none;
+  border-radius: 16rpx;
+  padding: 16rpx 32rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.clear-btn::after {
+  border: none;
+}
+
+.clear-btn:active {
+  background: #4b5563;
+  transform: scale(0.98);
+}
+
 /* 记录列表 */
 .records-section {
   flex: 1;
@@ -76,8 +127,21 @@
   animation: fadeInUp 0.3s ease-out;
 }
 
+.record-card {
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.record-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.1);
+}
+
 .record-content {
-  padding: 16rpx 0;
+  padding: 0;
 }
 
 .record-info {
@@ -93,17 +157,17 @@
 
 .record-type {
   font-size: 32rpx;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .record-amount {
   font-size: 36rpx;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .record-remark {
   font-size: 28rpx;
-  color: #606266;
+  color: #6b7280;
   margin-bottom: 12rpx;
   line-height: 1.4;
 }
@@ -116,12 +180,12 @@
 
 .record-time {
   font-size: 24rpx;
-  color: #909399;
+  color: #9ca3af;
 }
 
 .record-balance {
   font-size: 24rpx;
-  color: #909399;
+  color: #9ca3af;
 }
 
 /* 加载状态 */
@@ -135,7 +199,7 @@
 .load-more-text,
 .no-more text {
   font-size: 28rpx;
-  color: #909399;
+  color: #9ca3af;
 }
 
 /* 空状态 */
@@ -143,9 +207,12 @@
   margin-top: 100rpx;
 }
 
-.empty-content {
-  text-align: center;
+.empty-card {
+  background: #ffffff;
+  border-radius: 24rpx;
   padding: 64rpx 32rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+  text-align: center;
 }
 
 .empty-icon {
@@ -156,14 +223,14 @@
 
 .empty-title {
   font-size: 36rpx;
-  font-weight: 500;
-  color: #303133;
+  font-weight: 600;
+  color: #1f2937;
   margin-bottom: 16rpx;
 }
 
 .empty-desc {
   font-size: 28rpx;
-  color: #909399;
+  color: #6b7280;
   line-height: 1.5;
 }
 
@@ -181,8 +248,12 @@
 
 /* 响应式适配 */
 @media (max-width: 375px) {
-  .balance-container {
-    padding: 24rpx;
+  .main-content {
+    padding: 32rpx 24rpx;
+  }
+  
+  .page-title {
+    font-size: 40rpx;
   }
   
   .filter-row {

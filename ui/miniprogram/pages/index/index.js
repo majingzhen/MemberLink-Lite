@@ -8,7 +8,8 @@ Page({
     userInfo: null,
     hasUserInfo: false,
     canIUseGetUserProfile: false,
-    systemInfo: null
+    systemInfo: null,
+    currentTime: ''
   },
 
   onLoad() {
@@ -24,11 +25,26 @@ Page({
     
     // 获取系统信息
     this.getSystemInfo()
+    
+    // 初始化时间显示
+    this.updateCurrentTime()
+    
+    // 每分钟更新一次时间
+    this.timeInterval = setInterval(() => {
+      this.updateCurrentTime()
+    }, 60000)
   },
 
   onShow() {
     // 页面显示时刷新用户信息
     this.getUserInfo()
+  },
+
+  onUnload() {
+    // 清除定时器
+    if (this.timeInterval) {
+      clearInterval(this.timeInterval)
+    }
   },
 
   onPullDownRefresh() {
@@ -37,6 +53,18 @@ Page({
     setTimeout(() => {
       wx.stopPullDownRefresh()
     }, 1000)
+  },
+
+  // 更新当前时间
+  updateCurrentTime() {
+    const now = new Date()
+    const hours = now.getHours().toString().padStart(2, '0')
+    const minutes = now.getMinutes().toString().padStart(2, '0')
+    const timeString = `${hours}:${minutes}`
+    
+    this.setData({
+      currentTime: timeString
+    })
   },
 
   // 获取用户信息

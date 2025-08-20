@@ -1,173 +1,70 @@
 <!--pages/asset/index/index.wxml-->
-<view class="asset-container">
-  <!-- 浮动装饰元素 -->
-  <view class="floating-decoration"></view>
-  <view class="floating-decoration"></view>
-  
-  <!-- 未登录状态 -->
-  <view wx:if="{{!hasUserInfo}}" class="not-login">
-    <fresh-card type="primary" shadow="{{true}}" radius="large">
-      <view class="not-login-content">
+<view class="container">
+  <!-- 主要内容区 -->
+  <view class="main-content">
+    <!-- <view class="page-title">资产中心</view> -->
+    
+    <!-- 未登录状态 -->
+    <view wx:if="{{!hasUserInfo}}" class="not-login">
+      <view class="login-card">
         <view class="login-icon">💰</view>
         <view class="login-title">请先登录</view>
         <view class="login-desc">登录后可查看您的资产信息</view>
-        <fresh-button
-          type="primary"
-          size="large"
-          text="立即登录"
-          bindtap="goToLogin"
-        />
+        <button class="login-btn" bindtap="goToLogin">
+          立即登录
+        </button>
       </view>
-    </fresh-card>
-  </view>
+    </view>
 
-  <!-- 已登录状态 -->
-  <view wx:else class="asset-content">
-    <!-- 资产概览 -->
-    <view class="asset-overview">
-      <view class="overview-header">
-        <view class="header-emoji">💎</view>
-        <view class="header-title">我的资产</view>
-        <view class="header-subtitle">Asset Overview</view>
-      </view>
-
-      <!-- 余额卡片 -->
-      <view class="asset-cards">
-        <fresh-card 
-          type="success" 
-          shadow="{{true}}" 
-          radius="large"
-          clickable="{{true}}"
-          bindtap="onBalanceCardTap"
-          class="balance-card slide-in-left"
-        >
-          <view class="asset-card-content">
-            <view class="asset-icon-container">
-              <view class="asset-icon">💰</view>
-              <view class="icon-bg"></view>
-            </view>
-            <view class="asset-info">
-              <view class="asset-label">账户余额</view>
-              <view class="asset-value">¥{{formatMoney(assetInfo.balance)}}</view>
-              <view class="asset-desc">点击查看余额记录</view>
+    <!-- 已登录状态 -->
+    <view wx:else class="asset-content">
+      <!-- 资产卡片网格 -->
+      <view class="asset-grid">
+        <!-- 账户余额模块 -->
+        <view class="asset-card balance-card" bindtap="onBalanceCardTap">
+          <view class="card-content">
+            <view class="card-info">
+              <view class="card-label">账户余额</view>
+              <view class="card-value">¥{{assetInfo.balance || 0}}</view>
+              <view class="card-desc">点击查看余额记录</view>
             </view>
             <view class="card-arrow">→</view>
           </view>
-        </fresh-card>
+        </view>
 
-        <fresh-card 
-          type="warning" 
-          shadow="{{true}}" 
-          radius="large"
-          clickable="{{true}}"
-          bindtap="onPointsCardTap"
-          class="points-card slide-in-right"
-        >
-          <view class="asset-card-content">
-            <view class="asset-icon-container">
-              <view class="asset-icon">⭐</view>
-              <view class="icon-bg"></view>
-            </view>
-            <view class="asset-info">
-              <view class="asset-label">积分余额</view>
-              <view class="asset-value">{{formatNumber(assetInfo.points)}}</view>
-              <view class="asset-desc">点击查看积分记录</view>
+        <!-- 积分余额模块 -->
+        <view class="asset-card points-card" bindtap="onPointsCardTap">
+          <view class="card-content">
+            <view class="card-info">
+              <view class="card-label">积分余额</view>
+              <view class="card-value">{{assetInfo.points || 0}}</view>
+              <view class="card-desc">点击查看积分记录</view>
             </view>
             <view class="card-arrow">→</view>
           </view>
-        </fresh-card>
-      </view>
-    </view>
-
-    <!-- 快捷操作 -->
-    <view class="quick-actions">
-      <view class="section-header">
-        <view class="section-title">⚡ 快捷操作</view>
-        <view class="section-subtitle">常用功能一键直达</view>
-      </view>
-      
-      <view class="actions-grid">
-        <view 
-          wx:for="{{quickActions}}" 
-          wx:key="title"
-          class="action-item"
-          data-url="{{item.url}}"
-          bindtap="onQuickActionTap"
-        >
-          <fresh-card 
-            shadow="{{true}}" 
-            radius="medium"
-            clickable="{{true}}"
-            class="action-card"
-          >
-            <view class="action-content">
-              <view class="action-icon-container">
-                <view class="action-icon" style="color: {{item.color}}">{{item.icon}}</view>
-                <view class="icon-bg" style="background: {{item.color}}"></view>
-              </view>
-              <view class="action-title">{{item.title}}</view>
-              <view class="action-desc">{{item.desc}}</view>
-            </view>
-          </fresh-card>
         </view>
       </view>
-    </view>
 
-    <!-- 资产统计 -->
-    <view class="asset-stats">
-      <view class="section-header">
-        <view class="section-title">📊 资产统计</view>
-        <view class="section-subtitle">本月资产变化情况</view>
-      </view>
-      
-      <fresh-card shadow="{{true}}" radius="large" class="stats-card bounce-in">
-        <view class="stats-content">
-          <view class="stats-item">
-            <view class="stats-icon-container">
-              <view class="stats-icon">📈</view>
-            </view>
-            <view class="stats-info">
-              <view class="stats-label">本月收入</view>
-              <view class="stats-value">¥0.00</view>
-            </view>
-          </view>
-          
-          <view class="stats-divider"></view>
-          
-          <view class="stats-item">
-            <view class="stats-icon-container">
-              <view class="stats-icon">📉</view>
-            </view>
-            <view class="stats-info">
-              <view class="stats-label">本月支出</view>
-              <view class="stats-value">¥0.00</view>
-            </view>
-          </view>
-          
-          <view class="stats-divider"></view>
-          
-          <view class="stats-item">
-            <view class="stats-icon-container">
-              <view class="stats-icon">🎯</view>
-            </view>
-            <view class="stats-info">
-              <view class="stats-label">积分获得</view>
-              <view class="stats-value">0</view>
-            </view>
-          </view>
+      <!-- 功能菜单 -->
+      <view class="menu-grid">
+        <view class="menu-item" bindtap="onQuickActionTap" data-url="/pages/asset/balance/balance">
+          <view class="menu-icon blue">💱</view>
+          <view class="menu-text">余额记录</view>
         </view>
-      </fresh-card>
-    </view>
-
-    <!-- 资产小贴士 -->
-    <view class="asset-tips">
-      <view class="tip-card fresh-card">
-        <view class="tip-header">
-          <view class="tip-icon">💡</view>
-          <view class="tip-title">资产小贴士</view>
+        
+        <view class="menu-item" bindtap="onQuickActionTap" data-url="/pages/asset/points/points">
+          <view class="menu-icon yellow">⭐</view>
+          <view class="menu-text">积分记录</view>
         </view>
-        <view class="tip-content">
-          定期查看资产统计，合理规划您的财务状况，让每一分钱都发挥最大价值！
+        
+        <view class="menu-item" bindtap="onQuickActionTap" data-url="">
+          <view class="menu-icon green">📊</view>
+          <view class="menu-text">资产统计</view>
+        </view>
+        
+        <view class="menu-item" bindtap="onQuickActionTap" data-url="">
+          <view class="menu-icon red">🎁</view>
+          <view class="menu-text">签到领积分</view>
         </view>
       </view>
     </view>

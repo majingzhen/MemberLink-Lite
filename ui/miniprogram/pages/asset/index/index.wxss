@@ -1,466 +1,288 @@
 /* pages/asset/index/index.wxss */
 
-.asset-container {
+.container {
   min-height: 100vh;
+  background: #f3f4f6;
+  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 顶部栏 */
+.header {
+  background: #ffffff;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
   padding: 32rpx;
-  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* 浮动装饰元素 */
-.asset-container::before {
-  content: '';
-  position: fixed;
-  top: 15%;
-  right: 10%;
-  width: 180rpx;
-  height: 180rpx;
-  border-radius: 50%;
-  background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
-  opacity: 0.1;
-  animation: float 6s ease-in-out infinite;
-  z-index: -1;
+.header-time {
+  font-size: 28rpx;
+  color: #6b7280;
 }
 
-.asset-container::after {
-  content: '';
-  position: fixed;
-  bottom: 25%;
-  left: 10%;
-  width: 120rpx;
-  height: 120rpx;
-  border-radius: 50%;
-  background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
-  opacity: 0.08;
-  animation: float 8s ease-in-out infinite reverse;
-  z-index: -1;
+.header-battery {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.battery-icon {
+  font-size: 24rpx;
+  color: #6b7280;
+}
+
+.battery-text {
+  font-size: 24rpx;
+  color: #6b7280;
+}
+
+/* 主要内容区 */
+.main-content {
+  flex: 1;
+  padding: 48rpx 32rpx;
+}
+
+.page-title {
+  font-size: 48rpx;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 48rpx;
+  color: #1f2937;
 }
 
 /* 未登录状态 */
 .not-login {
-  margin-top: 200rpx;
-  animation: fadeIn 0.8s ease-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400rpx;
 }
 
-.not-login-content {
+.login-card {
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 64rpx 48rpx;
   text-align: center;
-  padding: 48rpx 32rpx;
-  position: relative;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+  max-width: 500rpx;
+  width: 100%;
 }
 
 .login-icon {
   font-size: 120rpx;
   margin-bottom: 32rpx;
-  opacity: 0.8;
-  animation: bounce 2s infinite;
 }
 
 .login-title {
   font-size: 36rpx;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #1f2937;
   margin-bottom: 16rpx;
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .login-desc {
   font-size: 28rpx;
-  color: var(--text-regular);
+  color: #6b7280;
   margin-bottom: 48rpx;
   line-height: 1.5;
 }
 
-/* 资产概览 */
-.asset-overview {
-  margin-bottom: 48rpx;
-  animation: slideInUp 0.6s ease-out;
+.login-btn {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 16rpx;
+  padding: 32rpx 64rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+  width: 100%;
+  transition: all 0.2s ease;
 }
 
-.overview-header {
-  text-align: center;
-  margin-bottom: 32rpx;
-  position: relative;
+.login-btn::after {
+  border: none;
 }
 
-.header-emoji {
-  font-size: 80rpx;
-  margin-bottom: 16rpx;
-  animation: pulse 2s infinite;
+.login-btn:active {
+  background: #1d4ed8;
+  transform: scale(0.98);
 }
 
-.header-title {
-  font-size: 48rpx;
-  font-weight: bold;
-  color: var(--text-primary);
-  margin-bottom: 8rpx;
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* 资产内容 */
+.asset-content {
+  animation: fadeIn 0.6s ease-out;
 }
 
-.header-subtitle {
-  font-size: 24rpx;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 2rpx;
-}
-
-/* 资产卡片 */
-.asset-cards {
+/* 资产卡片网格 */
+.asset-grid {
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
+  gap: 32rpx;
+  margin-bottom: 48rpx;
+}
+
+.asset-card {
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 40rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.asset-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.1);
 }
 
 .balance-card {
-  background: linear-gradient(135deg, rgba(81, 207, 102, 0.1) 0%, rgba(78, 205, 196, 0.1) 100%);
-  border: 2rpx solid rgba(81, 207, 102, 0.2);
+  background: #dcfce7;
+  border: 2rpx solid #bbf7d0;
 }
 
 .points-card {
-  background: linear-gradient(135deg, rgba(255, 212, 59, 0.1) 0%, rgba(255, 230, 109, 0.1) 100%);
-  border: 2rpx solid rgba(255, 212, 59, 0.2);
+  background: #fef3c7;
+  border: 2rpx solid #fde68a;
 }
 
-.asset-card-content {
+.card-content {
   display: flex;
   align-items: center;
-  padding: 16rpx 0;
-  position: relative;
+  justify-content: space-between;
 }
 
-.asset-icon-container {
-  position: relative;
-  margin-right: 32rpx;
-  display: inline-block;
-}
-
-.asset-icon {
-  font-size: 64rpx;
-  position: relative;
-  z-index: 2;
-  transition: all 0.3s ease;
-}
-
-.icon-bg {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 80rpx;
-  height: 80rpx;
-  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0.1;
-  transition: all 0.3s ease;
-}
-
-.asset-card-content:active .icon-bg {
-  transform: translate(-50%, -50%) scale(1.2);
-  opacity: 0.2;
-}
-
-.asset-card-content:active .asset-icon {
-  transform: scale(1.1);
-}
-
-.asset-info {
+.card-info {
   flex: 1;
 }
 
-.asset-label {
+.card-label {
   font-size: 28rpx;
-  color: var(--text-regular);
-  margin-bottom: 8rpx;
   font-weight: 500;
-}
-
-.asset-value {
-  font-size: 48rpx;
-  font-weight: bold;
-  color: var(--text-primary);
+  color: #6b7280;
   margin-bottom: 8rpx;
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
-.asset-desc {
+.card-value {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 8rpx;
+}
+
+.card-desc {
   font-size: 24rpx;
-  color: var(--text-secondary);
+  color: #9ca3af;
 }
 
 .card-arrow {
-  font-size: 24rpx;
-  color: var(--primary-color);
-  font-weight: bold;
-  transition: transform 0.3s ease;
+  font-size: 32rpx;
+  color: #6b7280;
+  transition: transform 0.2s ease;
 }
 
-.asset-card-content:active .card-arrow {
+.asset-card:active .card-arrow {
   transform: translateX(8rpx);
 }
 
-/* 快捷操作 */
-.quick-actions {
-  margin-bottom: 48rpx;
-  animation: slideInUp 0.8s ease-out;
-}
-
-.section-header {
-  margin-bottom: 24rpx;
-}
-
-.section-title {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 8rpx;
-  padding-left: 16rpx;
-  border-left: 8rpx solid var(--primary-color);
-  position: relative;
-}
-
-.section-title::after {
-  content: '';
-  position: absolute;
-  bottom: -4rpx;
-  left: 16rpx;
-  width: 60rpx;
-  height: 2rpx;
-  background: var(--primary-gradient);
-  animation: expand 2s ease-out;
-}
-
-.section-subtitle {
-  font-size: 24rpx;
-  color: var(--text-secondary);
-  padding-left: 24rpx;
-}
-
-.actions-grid {
+/* 功能菜单 */
+.menu-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24rpx;
 }
 
-.action-card {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.action-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.5s;
-}
-
-.action-card:active::before {
-  left: 100%;
-}
-
-.action-card:active {
-  transform: scale(0.95) translateY(-4rpx);
-}
-
-.action-content {
+.menu-item {
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 32rpx;
   text-align: center;
-  padding: 24rpx 16rpx;
-}
-
-.action-icon-container {
-  position: relative;
-  margin-bottom: 16rpx;
-  display: inline-block;
-}
-
-.action-icon {
-  font-size: 48rpx;
-  position: relative;
-  z-index: 2;
-  transition: all 0.3s ease;
-}
-
-.action-icon-container .icon-bg {
-  width: 60rpx;
-  height: 60rpx;
-  opacity: 0.15;
-}
-
-.action-card:active .action-icon {
-  transform: scale(1.1);
-}
-
-.action-title {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 8rpx;
-}
-
-.action-desc {
-  font-size: 24rpx;
-  color: var(--text-secondary);
-}
-
-/* 资产统计 */
-.asset-stats {
-  margin-bottom: 48rpx;
-  animation: slideInUp 1s ease-out;
-}
-
-.stats-card {
-  background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(78, 205, 196, 0.1) 100%);
-  border: 2rpx solid rgba(255, 107, 107, 0.2);
-}
-
-.stats-content {
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  padding: 24rpx 0;
+  justify-content: center;
+  transition: all 0.2s ease;
 }
 
-.stats-item {
-  flex: 1;
+.menu-item:active {
+  transform: scale(0.95);
+  background: #f9fafb;
+}
+
+.menu-icon {
+  font-size: 48rpx;
+  margin-bottom: 16rpx;
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
 }
 
-.stats-item:active {
-  transform: scale(1.05);
+.menu-icon.blue {
+  background: #dbeafe;
+  color: #2563eb;
 }
 
-.stats-icon-container {
-  position: relative;
-  margin-right: 16rpx;
-  display: inline-block;
+.menu-icon.yellow {
+  background: #fef3c7;
+  color: #d97706;
 }
 
-.stats-icon {
-  font-size: 40rpx;
-  position: relative;
-  z-index: 2;
-  transition: all 0.3s ease;
+.menu-icon.green {
+  background: #dcfce7;
+  color: #16a34a;
 }
 
-.stats-icon-container .icon-bg {
-  width: 50rpx;
-  height: 50rpx;
-  opacity: 0.1;
+.menu-icon.red {
+  background: #fee2e2;
+  color: #dc2626;
 }
 
-.stats-item:active .stats-icon {
-  transform: scale(1.1);
-}
-
-.stats-info {
-  text-align: center;
-}
-
-.stats-label {
-  font-size: 24rpx;
-  color: var(--text-secondary);
-  margin-bottom: 8rpx;
-  font-weight: 500;
-}
-
-.stats-value {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: var(--text-primary);
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.stats-divider {
-  width: 2rpx;
-  height: 64rpx;
-  background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
-  margin: 0 24rpx;
-  border-radius: 1rpx;
-}
-
-/* 资产小贴士 */
-.asset-tips {
-  margin-bottom: 32rpx;
-  animation: slideInUp 1.2s ease-out;
-}
-
-.tip-card {
-  background: linear-gradient(135deg, rgba(255, 230, 109, 0.1) 0%, rgba(255, 212, 59, 0.1) 100%);
-  border: 2rpx solid rgba(255, 230, 109, 0.2);
-}
-
-.tip-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 16rpx;
-}
-
-.tip-icon {
-  font-size: 40rpx;
-  margin-right: 16rpx;
-  animation: pulse 2s infinite;
-}
-
-.tip-title {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.tip-content {
+.menu-text {
   font-size: 28rpx;
-  color: var(--text-regular);
-  line-height: 1.6;
+  font-weight: 500;
+  color: #374151;
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* 响应式适配 */
 @media (max-width: 375px) {
-  .asset-container {
-    padding: 24rpx;
+  .main-content {
+    padding: 32rpx 24rpx;
   }
   
-  .actions-grid {
+  .page-title {
+    font-size: 40rpx;
+  }
+  
+  .asset-card {
+    padding: 32rpx;
+  }
+  
+  .card-value {
+    font-size: 40rpx;
+  }
+  
+  .menu-grid {
     grid-template-columns: 1fr;
   }
   
-  .asset-card-content {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  .asset-icon-container {
-    margin-right: 0;
-    margin-bottom: 16rpx;
-  }
-  
-  .stats-content {
-    flex-direction: column;
-    gap: 24rpx;
-  }
-  
-  .stats-divider {
-    width: 100%;
-    height: 2rpx;
-    margin: 0;
-  }
-  
-  .card-arrow {
-    display: none;
+  .menu-item {
+    padding: 24rpx;
   }
 }

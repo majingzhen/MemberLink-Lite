@@ -8,10 +8,11 @@ Page({
   data: {
     userInfo: null,
     hasUserInfo: false,
+    currentTime: '',
     
     // 资产信息
     assetInfo: {
-      balance: '0.00',
+      balance: 0,
       points: 0
     },
     
@@ -50,12 +51,30 @@ Page({
 
   onLoad() {
     this.checkLoginStatus()
+    this.updateCurrentTime()
+    
+    // 每分钟更新一次时间
+    this.timeInterval = setInterval(() => {
+      this.updateCurrentTime()
+    }, 60000)
   },
 
   onShow() {
+    console.log('资产页面 onShow 被调用')
     this.checkLoginStatus()
+    console.log('登录状态检查完成，hasUserInfo:', this.data.hasUserInfo)
     if (this.data.hasUserInfo) {
+      console.log('开始加载资产信息')
       this.loadAssetInfo()
+    } else {
+      console.log('用户未登录，不加载资产信息')
+    }
+  },
+
+  onUnload() {
+    // 清除定时器
+    if (this.timeInterval) {
+      clearInterval(this.timeInterval)
     }
   },
 
@@ -66,6 +85,18 @@ Page({
     setTimeout(() => {
       wx.stopPullDownRefresh()
     }, 1000)
+  },
+
+  // 更新当前时间
+  updateCurrentTime() {
+    const now = new Date()
+    const hours = now.getHours().toString().padStart(2, '0')
+    const minutes = now.getMinutes().toString().padStart(2, '0')
+    const timeString = `${hours}:${minutes}`
+    
+    this.setData({
+      currentTime: timeString
+    })
   },
 
   // 检查登录状态
@@ -92,13 +123,37 @@ Page({
     try {
       showLoading('加载中...', false)
       
-      const assetInfo = await get('/asset/info')
+      const response = await get('/asset/info')
+      console.log('资产信息响应:', response)
       
-      this.setData({ assetInfo })
+      // 处理返回的数据，确保有默认值
+      // 接口返回的数据在 response.data 中
+      const assetData = response.data || {}
+      const assetInfo = {
+        balance: assetData.balance || 0,
+        points: assetData.points || 0
+      }
+      
+      console.log('处理后的资产信息:', assetInfo)
+      console.log('设置前的data:', this.data.assetInfo)
+      
+      this.setData({ 
+        assetInfo: assetInfo
+      })
+      
+      console.log('设置后的data:', this.data.assetInfo)
       
     } catch (error) {
       console.error('加载资产信息失败:', error)
       showError('加载失败，请重试')
+      
+      // 即使接口失败，也设置默认值
+      this.setData({
+        assetInfo: {
+          balance: 0,
+          points: 0
+        }
+      })
     } finally {
       hideLoading()
     }
@@ -142,11 +197,35 @@ Page({
 
   // 格式化金额
   formatMoney(amount) {
-    return formatMoney(amount)
+    // 处理空值、null、undefined等情况
+    if (amount === null || amount === undefined || amount === '' || isNaN(amount)) {
+      return '0.00'
+    }
+    
+    // 确保amount是数字类型
+    const numAmount = parseFloat(amount)
+    if (isNaN(numAmount)) {
+      return '0.00'
+    }
+    
+    // 调用工具函数格式化
+    return formatMoney(numAmount)
   },
 
   // 格式化数字
   formatNumber(num) {
-    return formatNumber2(num)
+    // 处理空值、null、undefined等情况
+    if (num === null || num === undefined || num === '' || isNaN(num)) {
+      return '0'
+    }
+    
+    // 确保num是数字类型
+    const numValue = parseInt(num)
+    if (isNaN(numValue)) {
+      return '0'
+    }
+    
+    // 调用工具函数格式化
+    return formatNumber2(numValue)
   }
 })

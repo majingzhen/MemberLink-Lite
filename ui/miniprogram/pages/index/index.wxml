@@ -1,127 +1,89 @@
 <!--pages/index/index.wxml-->
 <view class="container">
-  <!-- 头部欢迎区域 -->
-  <view class="welcome-section">
-    <view class="welcome-content">
-      <view class="welcome-header">
-        <view class="welcome-title">会员通・轻框架</view>
-        <view class="welcome-subtitle">您的专属会员服务平台</view>
-      </view>
-      
-      <view wx:if="{{hasUserInfo}}" class="user-welcome">
-        <view class="user-avatar-container">
-          <image class="user-avatar" src="{{userInfo.avatar || '/images/default-avatar.png'}}" mode="aspectFill"></image>
-        </view>
-        <view class="user-info">
-          <view class="user-nickname">{{userInfo.nickname || userInfo.username}}</view>
-          <view class="user-desc">欢迎回来</view>
-          <view class="user-stats">
-            <view class="stat-item">
-              <view class="stat-value">¥{{userInfo.balance || 0}}</view>
-              <view class="stat-label">余额</view>
-            </view>
-            <view class="stat-item">
-              <view class="stat-value">{{userInfo.points || 0}}</view>
-              <view class="stat-label">积分</view>
-            </view>
-          </view>
-        </view>
-      </view>
-      
-      <view wx:else class="login-prompt">
-        <view class="prompt-text">请先登录以享受完整服务</view>
-        <view class="login-buttons">
-          <button class="login-btn" bindtap="goToLogin">
-            立即登录
-          </button>
-          <button class="wechat-btn" bindtap="onWechatLogin">
-            微信快速登录
-          </button>
-        </view>
-      </view>
-    </view>
-  </view>
-
-  <!-- 功能菜单区域 -->
-  <view class="menu-section">
-    <view class="section-header">
-      <view class="section-title">功能菜单</view>
-    </view>
+  <!-- 主要内容区 -->
+  <view class="main-content">
+    <view class="page-title">您的专属会员服务平台</view>
     
+    <!-- 微信用户信息展示 -->
+    <view class="user-card">
+      <view class="user-info-section">
+        <image 
+          class="user-avatar" 
+          src="{{userInfo.avatar || '/images/default-avatar.png'}}" 
+          mode="aspectFill"
+        ></image>
+        <view class="user-details">
+          <view class="user-greeting">欢迎回来</view>
+          <view class="user-subtitle">保持活跃，享受更多权益</view>
+        </view>
+      </view>
+      
+      <view class="user-stats">
+        <view class="stat-item">
+          <view class="stat-value balance">¥{{userInfo.balance || 0}}</view>
+          <view class="stat-label">余额</view>
+        </view>
+        <view class="stat-item">
+          <view class="stat-value points">{{userInfo.points || 0}}</view>
+          <view class="stat-label">积分</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 功能菜单 -->
     <view class="menu-grid">
-      <!-- 个人中心 -->
       <view class="menu-item" bindtap="goToProfile">
-        <view class="menu-icon">👤</view>
-        <view class="menu-title">个人中心</view>
-        <view class="menu-desc">管理个人信息</view>
+        <view class="menu-icon blue">
+          <text class="icon-text">👤</text>
+        </view>
+        <view class="menu-content">
+          <view class="menu-title">个人中心</view>
+          <view class="menu-desc">管理个人信息</view>
+        </view>
       </view>
       
-      <!-- 资产管理 -->
       <view class="menu-item" bindtap="goToAsset">
-        <view class="menu-icon">💰</view>
-        <view class="menu-title">资产管理</view>
-        <view class="menu-desc">查看余额积分</view>
+        <view class="menu-icon orange">
+          <text class="icon-text">💰</text>
+        </view>
+        <view class="menu-content">
+          <view class="menu-title">资产管理</view>
+          <view class="menu-desc">查询余额积分</view>
+        </view>
       </view>
       
-      <!-- 更多功能 -->
       <view class="menu-item">
-        <view class="menu-icon">⚙️</view>
-        <view class="menu-title">更多功能</view>
-        <view class="menu-desc">敬请期待</view>
+        <view class="menu-icon gray">
+          <text class="icon-text">⚙️</text>
+        </view>
+        <view class="menu-content">
+          <view class="menu-title">更多功能</view>
+          <view class="menu-desc">敬请期待</view>
+        </view>
       </view>
       
-      <!-- 帮助中心 -->
       <view class="menu-item">
-        <view class="menu-icon">❓</view>
-        <view class="menu-title">帮助中心</view>
-        <view class="menu-desc">常见问题</view>
+        <view class="menu-icon green">
+          <text class="icon-text">❓</text>
+        </view>
+        <view class="menu-content">
+          <view class="menu-title">帮助中心</view>
+          <view class="menu-desc">常见问题</view>
+        </view>
       </view>
     </view>
-  </view>
 
-  <!-- 快捷操作区域 -->
-  <view wx:if="{{hasUserInfo}}" class="quick-actions">
-    <view class="section-header">
-      <view class="section-title">快捷操作</view>
-    </view>
-    
-    <view class="actions-content">
-      <view class="action-item" bindtap="goToAsset">
-        <view class="action-icon">📊</view>
-        <view class="action-text">查看资产</view>
+    <!-- 未登录状态显示 -->
+    <view wx:if="{{!hasUserInfo}}" class="login-section">
+      <view class="login-prompt">请先登录以享受完整服务</view>
+      <view class="login-buttons">
+        <button class="login-btn primary" bindtap="goToLogin">
+          立即登录
+        </button>
+        <button class="login-btn wechat" bindtap="onWechatLogin">
+          微信快速登录
+        </button>
       </view>
-      
-      <view class="action-item">
-        <view class="action-icon">🎁</view>
-        <view class="action-text">签到领积分</view>
-      </view>
-      
-      <view class="action-item">
-        <view class="action-icon">🔄</view>
-        <view class="action-text">交易记录</view>
-      </view>
-    </view>
-  </view>
-
-  <!-- 调试信息 -->
-  <view class="debug-info">
-    <view class="debug-title">调试信息</view>
-    <view class="debug-content">
-      <text>登录状态: {{hasUserInfo ? '已登录' : '未登录'}}</text>
-      <text wx:if="{{userInfo}}">用户: {{userInfo.nickname || userInfo.username}}</text>
-      <text wx:if="{{userInfo}}">ID: {{userInfo.id}}</text>
-      <text wx:if="{{userInfo}}">余额: ¥{{userInfo.balance || 0}}</text>
-      <text wx:if="{{userInfo}}">积分: {{userInfo.points || 0}}</text>
-    </view>
-  </view>
-
-  <!-- 系统信息（开发调试用） -->
-  <view wx:if="{{systemInfo}}" class="debug-info">
-    <view class="debug-title">系统信息</view>
-    <view class="debug-content">
-      <text>设备: {{systemInfo.brand}} {{systemInfo.model}}</text>
-      <text>系统: {{systemInfo.system}}</text>
-      <text>微信版本: {{systemInfo.version}}</text>
     </view>
   </view>
 </view>
