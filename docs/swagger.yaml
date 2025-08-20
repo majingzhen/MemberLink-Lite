@@ -31,27 +31,11 @@ definitions:
         description: 总数
         type: integer
     type: object
-  controllers.AuthURLResponse:
+  controllers.PhoneNumberResponse:
     properties:
-      auth_url:
-        description: 授权URL
+      phone_number:
+        description: 手机号
         type: string
-    type: object
-  controllers.CreateTenantRequest:
-    properties:
-      domain:
-        type: string
-      name:
-        type: string
-      settings:
-        additionalProperties: true
-        type: object
-      tenant_id:
-        type: string
-    required:
-    - domain
-    - name
-    - tenant_id
     type: object
   controllers.RefreshTokenRequest:
     properties:
@@ -61,24 +45,35 @@ definitions:
     required:
     - refresh_token
     type: object
-
-  controllers.SetTenantSettingRequest:
+  controllers.TokenInfo:
     properties:
-      value: {}
-    required:
-    - value
+      access_token:
+        description: 访问令牌
+        type: string
+      expires_in:
+        description: 过期时间（秒）
+        type: integer
+      refresh_token:
+        description: 刷新令牌
+        type: string
     type: object
-  controllers.UpdateTenantRequest:
+  controllers.WeChatLoginResponse:
     properties:
-      domain:
-        type: string
-      enabled:
+      is_new_user:
+        description: 是否为新用户
         type: boolean
-      name:
-        type: string
-      settings:
-        additionalProperties: true
-        type: object
+      tokens:
+        allOf:
+        - $ref: '#/definitions/controllers.TokenInfo'
+        description: 令牌信息
+      user:
+        allOf:
+        - $ref: '#/definitions/models.User'
+        description: 用户信息
+      wechat_info:
+        allOf:
+        - $ref: '#/definitions/services.WeChatUserInfo'
+        description: 微信用户信息
     type: object
   models.File:
     properties:
@@ -140,6 +135,10 @@ definitions:
       updated_at:
         type: string
       username:
+        type: string
+      wechat_openid:
+        type: string
+      wechat_unionid:
         type: string
     type: object
   services.ChangeBalanceRequest:
@@ -261,29 +260,17 @@ definitions:
         maxLength: 20
         minLength: 3
         type: string
+      wechat_openid:
+        example: wx_openid_123
+        type: string
+      wechat_unionid:
+        example: wx_unionid_123
+        type: string
     required:
     - email
     - password
     - phone
     - username
-    type: object
-  services.TenantConfig:
-    properties:
-      created_at:
-        type: string
-      domain:
-        type: string
-      enabled:
-        type: boolean
-      name:
-        type: string
-      settings:
-        additionalProperties: true
-        type: object
-      tenant_id:
-        type: string
-      updated_at:
-        type: string
     type: object
   services.TokenResponse:
     properties:
@@ -298,6 +285,9 @@ definitions:
     type: object
   services.UpdateProfileRequest:
     properties:
+      avatar:
+        example: http://example.com/avatar.jpg
+        type: string
       email:
         example: newemail@example.com
         type: string
@@ -307,6 +297,12 @@ definitions:
         type: string
       phone:
         example: "13800138001"
+        type: string
+      wechat_openid:
+        example: wx_openid_123
+        type: string
+      wechat_unionid:
+        example: wx_unionid_123
         type: string
     type: object
   services.UploadFileResponse:
@@ -320,6 +316,36 @@ definitions:
       size:
         type: integer
       url:
+        type: string
+    type: object
+  services.WeChatUserInfo:
+    properties:
+      avatar:
+        description: 头像URL
+        type: string
+      city:
+        description: 城市
+        type: string
+      country:
+        description: 国家
+        type: string
+      gender:
+        description: 性别：1-男性，2-女性，0-未知
+        type: integer
+      nickname:
+        description: 昵称
+        type: string
+      open_id:
+        description: 微信用户唯一标识
+        type: string
+      phone:
+        description: 手机号
+        type: string
+      province:
+        description: 省份
+        type: string
+      union_id:
+        description: 微信UnionID
         type: string
     type: object
 host: localhost:8080
@@ -336,142 +362,6 @@ info:
   title: 高扩展性会员系统基础框架 API
   version: "1.0"
 paths:
-  /admin/tenants:
-    get:
-      consumes:
-      - application/json
-      description: 获取系统中所有租户的配置信息（仅管理员可访问）
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 获取成功
-          schema:
-            allOf:
-            - $ref: '#/definitions/common.APIResponse'
-            - properties:
-                data:
-                  additionalProperties:
-                    $ref: '#/definitions/services.TenantConfig'
-                  type: object
-              type: object
-        "403":
-          description: 权限不足
-          schema:
-            $ref: '#/definitions/common.APIResponse'
-      security:
-      - BearerAuth: []
-      summary: 获取所有租户列表
-      tags:
-      - 租户管理
-    post:
-      consumes:
-      - application/json
-      description: 创建新的租户配置（仅管理员可访问）
-      parameters:
-      - description: 租户信息
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/controllers.CreateTenantRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: 创建成功
-          schema:
-            allOf:
-            - $ref: '#/definitions/common.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/services.TenantConfig'
-              type: object
-        "400":
-          description: 参数错误
-          schema:
-            $ref: '#/definitions/common.APIResponse'
-        "409":
-          description: 租户已存在
-          schema:
-            $ref: '#/definitions/common.APIResponse'
-      security:
-      - BearerAuth: []
-      summary: 创建新租户
-      tags:
-      - 租户管理
-  /admin/tenants/{tenant_id}:
-    delete:
-      consumes:
-      - application/json
-      description: 删除指定的租户配置（仅管理员可访问）
-      parameters:
-      - description: 租户ID
-        in: path
-        name: tenant_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 删除成功
-          schema:
-            $ref: '#/definitions/common.APIResponse'
-        "400":
-          description: 无法删除
-          schema:
-            $ref: '#/definitions/common.APIResponse'
-        "404":
-          description: 租户不存在
-          schema:
-            $ref: '#/definitions/common.APIResponse'
-      security:
-      - BearerAuth: []
-      summary: 删除租户
-      tags:
-      - 租户管理
-    put:
-      consumes:
-      - application/json
-      description: 更新指定租户的配置信息（仅管理员可访问）
-      parameters:
-      - description: 租户ID
-        in: path
-        name: tenant_id
-        required: true
-        type: string
-      - description: 更新信息
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/controllers.UpdateTenantRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 更新成功
-          schema:
-            allOf:
-            - $ref: '#/definitions/common.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/services.TenantConfig'
-              type: object
-        "400":
-          description: 参数错误
-          schema:
-            $ref: '#/definitions/common.APIResponse'
-        "404":
-          description: 租户不存在
-          schema:
-            $ref: '#/definitions/common.APIResponse'
-      security:
-      - BearerAuth: []
-      summary: 更新租户配置
-      tags:
-      - 租户管理
   /api/v1/files:
     get:
       consumes:
@@ -1133,15 +1023,17 @@ paths:
       summary: 用户注册
       tags:
       - 认证管理
-
-
-
-  /tenant/current:
+  /auth/wechat/jscode2session:
     get:
       consumes:
       - application/json
-      description: 获取当前请求的租户配置信息
+      description: 处理微信小程序登录，使用jscode2session接口
       parameters:
+      - description: 微信小程序登录码
+        in: query
+        name: code
+        required: true
+        type: string
       - default: default
         description: 租户ID
         in: header
@@ -1151,101 +1043,108 @@ paths:
       - application/json
       responses:
         "200":
-          description: 获取成功
+          description: 登录成功
           schema:
             allOf:
             - $ref: '#/definitions/common.APIResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/services.TenantConfig'
+                  $ref: '#/definitions/controllers.WeChatLoginResponse'
               type: object
-        "404":
-          description: 租户不存在
-          schema:
-            $ref: '#/definitions/common.APIResponse'
-      security:
-      - BearerAuth: []
-      summary: 获取当前租户信息
-      tags:
-      - 租户管理
-  /tenant/settings/{key}:
-    get:
-      consumes:
-      - application/json
-      description: 获取当前租户的特定设置值
-      parameters:
-      - description: 设置键名
-        in: path
-        name: key
-        required: true
-        type: string
-      - default: default
-        description: 租户ID
-        in: header
-        name: X-Tenant-ID
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 获取成功
-          schema:
-            allOf:
-            - $ref: '#/definitions/common.APIResponse'
-            - properties:
-                data:
-                  type: object
-              type: object
-        "404":
-          description: 设置不存在
-          schema:
-            $ref: '#/definitions/common.APIResponse'
-      security:
-      - BearerAuth: []
-      summary: 获取租户设置
-      tags:
-      - 租户管理
-    put:
-      consumes:
-      - application/json
-      description: 设置当前租户的特定设置值
-      parameters:
-      - description: 设置键名
-        in: path
-        name: key
-        required: true
-        type: string
-      - description: 设置值
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/controllers.SetTenantSettingRequest'
-      - default: default
-        description: 租户ID
-        in: header
-        name: X-Tenant-ID
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 设置成功
-          schema:
-            $ref: '#/definitions/common.APIResponse'
         "400":
           description: 参数错误
           schema:
             $ref: '#/definitions/common.APIResponse'
-        "404":
-          description: 租户不存在
+        "401":
+          description: 授权失败
           schema:
             $ref: '#/definitions/common.APIResponse'
-      security:
-      - BearerAuth: []
-      summary: 设置租户设置
+      summary: 处理微信小程序登录
       tags:
-      - 租户管理
+      - 微信授权
+  /auth/wechat/login-with-phone:
+    post:
+      consumes:
+      - application/json
+      description: 处理微信小程序登录，同时获取手机号，避免双账号问题
+      parameters:
+      - description: 微信小程序登录码
+        in: query
+        name: login_code
+        required: true
+        type: string
+      - description: 微信手机号授权码
+        in: query
+        name: phone_code
+        required: true
+        type: string
+      - default: default
+        description: 租户ID
+        in: header
+        name: X-Tenant-ID
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 登录成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/controllers.WeChatLoginResponse'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+        "401":
+          description: 授权失败
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+      summary: 处理微信小程序登录（包含手机号）
+      tags:
+      - 微信授权
+  /auth/wechat/phone:
+    get:
+      consumes:
+      - application/json
+      description: 获取微信手机号，用于绑定用户账号
+      parameters:
+      - description: 微信手机号授权码
+        in: query
+        name: code
+        required: true
+        type: string
+      - default: default
+        description: 租户ID
+        in: header
+        name: X-Tenant-ID
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/controllers.PhoneNumberResponse'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+        "401":
+          description: 授权失败
+          schema:
+            $ref: '#/definitions/common.APIResponse'
+      summary: 获取微信手机号
+      tags:
+      - 微信授权
   /user/avatar:
     post:
       consumes:

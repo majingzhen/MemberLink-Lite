@@ -16,8 +16,8 @@ type User struct {
 	Avatar        string     `json:"avatar" gorm:"size:255;comment:头像URL"`
 	Phone         string     `json:"phone" gorm:"uniqueIndex;size:20;comment:手机号"`
 	Email         string     `json:"email" gorm:"uniqueIndex;size:100;comment:邮箱"`
-	WeChatOpenID  string     `json:"wechat_openid" gorm:"column:wechat_openid;uniqueIndex;size:100;comment:微信OpenID"`
-	WeChatUnionID string     `json:"wechat_unionid" gorm:"column:wechat_unionid;uniqueIndex;size:100;comment:微信UnionID"`
+	WeChatOpenID  string     `json:"wechat_openid" gorm:"column:wechat_openid;index;size:100;comment:微信OpenID"`
+	WeChatUnionID string     `json:"wechat_unionid" gorm:"column:wechat_unionid;index;size:100;comment:微信UnionID"`
 	Balance       int64      `json:"balance" gorm:"default:0;comment:余额(分为单位)"`
 	Points        int64      `json:"points" gorm:"default:0;comment:积分"`
 	LastIP        string     `json:"last_ip" gorm:"size:45;comment:最后登录IP"`

@@ -24,233 +24,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/admin/tenants": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "获取系统中所有租户的配置信息（仅管理员可访问）",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "租户管理"
-                ],
-                "summary": "获取所有租户列表",
-                "responses": {
-                    "200": {
-                        "description": "获取成功",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/common.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "object",
-                                            "additionalProperties": {
-                                                "$ref": "#/definitions/services.TenantConfig"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "403": {
-                        "description": "权限不足",
-                        "schema": {
-                            "$ref": "#/definitions/common.APIResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "创建新的租户配置（仅管理员可访问）",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "租户管理"
-                ],
-                "summary": "创建新租户",
-                "parameters": [
-                    {
-                        "description": "租户信息",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.CreateTenantRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "创建成功",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/common.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/services.TenantConfig"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "参数错误",
-                        "schema": {
-                            "$ref": "#/definitions/common.APIResponse"
-                        }
-                    },
-                    "409": {
-                        "description": "租户已存在",
-                        "schema": {
-                            "$ref": "#/definitions/common.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/tenants/{tenant_id}": {
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "更新指定租户的配置信息（仅管理员可访问）",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "租户管理"
-                ],
-                "summary": "更新租户配置",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "租户ID",
-                        "name": "tenant_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "更新信息",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.UpdateTenantRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "更新成功",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/common.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/services.TenantConfig"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "参数错误",
-                        "schema": {
-                            "$ref": "#/definitions/common.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "租户不存在",
-                        "schema": {
-                            "$ref": "#/definitions/common.APIResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "删除指定的租户配置（仅管理员可访问）",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "租户管理"
-                ],
-                "summary": "删除租户",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "租户ID",
-                        "name": "tenant_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "删除成功",
-                        "schema": {
-                            "$ref": "#/definitions/common.APIResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "无法删除",
-                        "schema": {
-                            "$ref": "#/definitions/common.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "租户不存在",
-                        "schema": {
-                            "$ref": "#/definitions/common.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/files": {
             "get": {
                 "security": [
@@ -1312,17 +1085,9 @@ const docTemplate = `{
                 }
             }
         },
-
-
-
-        "/tenant/current": {
+        "/auth/wechat/jscode2session": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "获取当前请求的租户配置信息",
+                "description": "处理微信小程序登录，使用jscode2session接口",
                 "consumes": [
                     "application/json"
                 ],
@@ -1330,70 +1095,15 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "租户管理"
+                    "微信授权"
                 ],
-                "summary": "获取当前租户信息",
+                "summary": "处理微信小程序登录",
                 "parameters": [
                     {
                         "type": "string",
-                        "default": "default",
-                        "description": "租户ID",
-                        "name": "X-Tenant-ID",
-                        "in": "header"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "获取成功",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/common.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/services.TenantConfig"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "404": {
-                        "description": "租户不存在",
-                        "schema": {
-                            "$ref": "#/definitions/common.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/tenant/settings/{key}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "获取当前租户的特定设置值",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "租户管理"
-                ],
-                "summary": "获取租户设置",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "设置键名",
-                        "name": "key",
-                        "in": "path",
+                        "description": "微信小程序登录码",
+                        "name": "code",
+                        "in": "query",
                         "required": true
                     },
                     {
@@ -1406,7 +1116,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "获取成功",
+                        "description": "登录成功",
                         "schema": {
                             "allOf": [
                                 {
@@ -1416,68 +1126,11 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "object"
+                                            "$ref": "#/definitions/controllers.WeChatLoginResponse"
                                         }
                                     }
                                 }
                             ]
-                        }
-                    },
-                    "404": {
-                        "description": "设置不存在",
-                        "schema": {
-                            "$ref": "#/definitions/common.APIResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "设置当前租户的特定设置值",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "租户管理"
-                ],
-                "summary": "设置租户设置",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "设置键名",
-                        "name": "key",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "设置值",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.SetTenantSettingRequest"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "default": "default",
-                        "description": "租户ID",
-                        "name": "X-Tenant-ID",
-                        "in": "header"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "设置成功",
-                        "schema": {
-                            "$ref": "#/definitions/common.APIResponse"
                         }
                     },
                     "400": {
@@ -1486,8 +1139,141 @@ const docTemplate = `{
                             "$ref": "#/definitions/common.APIResponse"
                         }
                     },
-                    "404": {
-                        "description": "租户不存在",
+                    "401": {
+                        "description": "授权失败",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/wechat/login-with-phone": {
+            "post": {
+                "description": "处理微信小程序登录，同时获取手机号，避免双账号问题",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "微信授权"
+                ],
+                "summary": "处理微信小程序登录（包含手机号）",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "微信小程序登录码",
+                        "name": "login_code",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "微信手机号授权码",
+                        "name": "phone_code",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "default",
+                        "description": "租户ID",
+                        "name": "X-Tenant-ID",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "登录成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/controllers.WeChatLoginResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "授权失败",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/wechat/phone": {
+            "get": {
+                "description": "获取微信手机号，用于绑定用户账号",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "微信授权"
+                ],
+                "summary": "获取微信手机号",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "微信手机号授权码",
+                        "name": "code",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "default",
+                        "description": "租户ID",
+                        "name": "X-Tenant-ID",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "获取成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/controllers.PhoneNumberResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "授权失败",
                         "schema": {
                             "$ref": "#/definitions/common.APIResponse"
                         }
@@ -1811,35 +1597,11 @@ const docTemplate = `{
                 }
             }
         },
-        "controllers.AuthURLResponse": {
+        "controllers.PhoneNumberResponse": {
             "type": "object",
             "properties": {
-                "auth_url": {
-                    "description": "授权URL",
-                    "type": "string"
-                },
-
-            }
-        },
-        "controllers.CreateTenantRequest": {
-            "type": "object",
-            "required": [
-                "domain",
-                "name",
-                "tenant_id"
-            ],
-            "properties": {
-                "domain": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "settings": {
-                    "type": "object",
-                    "additionalProperties": true
-                },
-                "tenant_id": {
+                "phone_number": {
+                    "description": "手机号",
                     "type": "string"
                 }
             }
@@ -1856,31 +1618,53 @@ const docTemplate = `{
                 }
             }
         },
-
-        "controllers.SetTenantSettingRequest": {
+        "controllers.TokenInfo": {
             "type": "object",
-            "required": [
-                "value"
-            ],
             "properties": {
-                "value": {}
+                "access_token": {
+                    "description": "访问令牌",
+                    "type": "string"
+                },
+                "expires_in": {
+                    "description": "过期时间（秒）",
+                    "type": "integer"
+                },
+                "refresh_token": {
+                    "description": "刷新令牌",
+                    "type": "string"
+                }
             }
         },
-        "controllers.UpdateTenantRequest": {
+        "controllers.WeChatLoginResponse": {
             "type": "object",
             "properties": {
-                "domain": {
-                    "type": "string"
-                },
-                "enabled": {
+                "is_new_user": {
+                    "description": "是否为新用户",
                     "type": "boolean"
                 },
-                "name": {
-                    "type": "string"
+                "tokens": {
+                    "description": "令牌信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/controllers.TokenInfo"
+                        }
+                    ]
                 },
-                "settings": {
-                    "type": "object",
-                    "additionalProperties": true
+                "user": {
+                    "description": "用户信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    ]
+                },
+                "wechat_info": {
+                    "description": "微信用户信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/services.WeChatUserInfo"
+                        }
+                    ]
                 }
             }
         },
@@ -1974,6 +1758,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                },
+                "wechat_openid": {
+                    "type": "string"
+                },
+                "wechat_unionid": {
                     "type": "string"
                 }
             }
@@ -2141,33 +1931,14 @@ const docTemplate = `{
                     "maxLength": 20,
                     "minLength": 3,
                     "example": "testuser"
-                }
-            }
-        },
-        "services.TenantConfig": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
                 },
-                "domain": {
-                    "type": "string"
+                "wechat_openid": {
+                    "type": "string",
+                    "example": "wx_openid_123"
                 },
-                "enabled": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "settings": {
-                    "type": "object",
-                    "additionalProperties": true
-                },
-                "tenant_id": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
+                "wechat_unionid": {
+                    "type": "string",
+                    "example": "wx_unionid_123"
                 }
             }
         },
@@ -2191,6 +1962,10 @@ const docTemplate = `{
         "services.UpdateProfileRequest": {
             "type": "object",
             "properties": {
+                "avatar": {
+                    "type": "string",
+                    "example": "http://example.com/avatar.jpg"
+                },
                 "email": {
                     "type": "string",
                     "example": "newemail@example.com"
@@ -2203,6 +1978,14 @@ const docTemplate = `{
                 "phone": {
                     "type": "string",
                     "example": "13800138001"
+                },
+                "wechat_openid": {
+                    "type": "string",
+                    "example": "wx_openid_123"
+                },
+                "wechat_unionid": {
+                    "type": "string",
+                    "example": "wx_unionid_123"
                 }
             }
         },
@@ -2222,6 +2005,47 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "services.WeChatUserInfo": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "description": "头像URL",
+                    "type": "string"
+                },
+                "city": {
+                    "description": "城市",
+                    "type": "string"
+                },
+                "country": {
+                    "description": "国家",
+                    "type": "string"
+                },
+                "gender": {
+                    "description": "性别：1-男性，2-女性，0-未知",
+                    "type": "integer"
+                },
+                "nickname": {
+                    "description": "昵称",
+                    "type": "string"
+                },
+                "open_id": {
+                    "description": "微信用户唯一标识",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                },
+                "province": {
+                    "description": "省份",
+                    "type": "string"
+                },
+                "union_id": {
+                    "description": "微信UnionID",
                     "type": "string"
                 }
             }

@@ -129,8 +129,8 @@ import { showError, showSuccess } from '@/utils/error'
                 email: registerForm.email
             })
 
-            showSuccess('注册成功，请登录')
-            router.push('/login')
+            showSuccess('注册成功')
+            router.push('/')
         } catch (error: any) {
             console.error('注册失败:', error)
             showError(error)

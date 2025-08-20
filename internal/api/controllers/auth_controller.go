@@ -70,8 +70,21 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 		return
 	}
 
-	// 返回成功响应
-	common.SuccessResponse(c, "注册成功", user)
+	// 生成JWT Token
+	tokenResp, err := services.GenerateTokenPair(services.NewJWTService(), user.ID, user.Username)
+	if err != nil {
+		common.ErrorResponse(c, http.StatusInternalServerError, "Token生成失败", err.Error())
+		return
+	}
+
+	// 构建登录响应格式
+	loginResp := &services.LoginResponse{
+		User:   user,
+		Tokens: tokenResp,
+	}
+
+	// 返回成功响应（包含token）
+	common.SuccessResponse(c, "注册成功", loginResp)
 }
 
 // Login 用户登录
