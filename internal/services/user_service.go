@@ -6,6 +6,7 @@ import (
 	"member-link-lite/internal/database"
 	"member-link-lite/internal/models"
 	"member-link-lite/pkg/common"
+	"member-link-lite/pkg/utils"
 	"mime/multipart"
 	"regexp"
 	"time"
@@ -25,6 +26,8 @@ type UserService interface {
 	GetByPhone(ctx context.Context, phone string) (*models.User, error)
 	// 根据邮箱查找用户
 	GetByEmail(ctx context.Context, email string) (*models.User, error)
+	// 根据微信OpenID查找用户
+	GetByWeChatOpenID(ctx context.Context, openID string) (*models.User, error)
 	// 根据ID查找用户
 	GetByID(ctx context.Context, id uint64) (*models.User, error)
 	// 检查用户名是否存在
@@ -33,6 +36,8 @@ type UserService interface {
 	IsPhoneExists(ctx context.Context, phone string) (bool, error)
 	// 检查邮箱是否存在
 	IsEmailExists(ctx context.Context, email string) (bool, error)
+	// 检查微信OpenID是否存在
+	IsWeChatOpenIDExists(ctx context.Context, openID string) (bool, error)
 	// 刷新令牌
 	RefreshToken(ctx context.Context, refreshToken string) (*TokenResponse, error)
 	// 更新最后登录信息
@@ -47,11 +52,13 @@ type UserService interface {
 
 // RegisterRequest 注册请求
 type RegisterRequest struct {
-	Username string `json:"username" binding:"required,min=3,max=20" example:"testuser"`
-	Password string `json:"password" binding:"required,min=6,max=20" example:"password123"`
-	Phone    string `json:"phone" binding:"required" example:"13800138000"`
-	Email    string `json:"email" binding:"required,email" example:"test@example.com"`
-	Nickname string `json:"nickname" binding:"max=20" example:"测试用户"`
+	Username      string `json:"username" binding:"required,min=3,max=20" example:"testuser"`
+	Password      string `json:"password" binding:"required,min=6,max=20" example:"password123"`
+	Phone         string `json:"phone" binding:"required" example:"13800138000"`
+	Email         string `json:"email" binding:"required,email" example:"test@example.com"`
+	Nickname      string `json:"nickname" binding:"max=20" example:"测试用户"`
+	WeChatOpenID  string `json:"wechat_openid" example:"wx_openid_123"`
+	WeChatUnionID string `json:"wechat_unionid" example:"wx_unionid_123"`
 }
 
 // LoginRequest 登录请求
@@ -68,10 +75,12 @@ type LoginResponse struct {
 
 // UpdateProfileRequest 更新用户信息请求
 type UpdateProfileRequest struct {
-	Nickname string `json:"nickname" binding:"max=20" example:"新昵称"`
-	Email    string `json:"email" binding:"omitempty,email" example:"newemail@example.com"`
-	Phone    string `json:"phone" binding:"omitempty" example:"13800138001"`
-	Avatar   string `json:"avatar" binding:"omitempty" example:"http://example.com/avatar.jpg"`
+	Nickname      string `json:"nickname" binding:"max=20" example:"新昵称"`
+	Email         string `json:"email" binding:"omitempty,email" example:"newemail@example.com"`
+	Phone         string `json:"phone" binding:"omitempty" example:"13800138001"`
+	Avatar        string `json:"avatar" binding:"omitempty" example:"http://example.com/avatar.jpg"`
+	WeChatOpenID  string `json:"wechat_openid" example:"wx_openid_123"`
+	WeChatUnionID string `json:"wechat_unionid" example:"wx_unionid_123"`
 }
 
 // ChangePasswordRequest 修改密码请求
@@ -130,12 +139,25 @@ func (s *userServiceImpl) Register(ctx context.Context, req *RegisterRequest) (*
 		return nil, common.ErrEmailExists
 	}
 
+	// 检查微信OpenID是否已存在（如果提供）
+	if req.WeChatOpenID != "" {
+		exists, err = s.IsWeChatOpenIDExists(ctx, req.WeChatOpenID)
+		if err != nil {
+			return nil, err
+		}
+		if exists {
+			return nil, common.ErrUserExists
+		}
+	}
+
 	// 创建用户
 	user := &models.User{
-		Username: req.Username,
-		Phone:    req.Phone,
-		Email:    req.Email,
-		Nickname: req.Nickname,
+		Username:      req.Username,
+		Phone:         req.Phone,
+		Email:         req.Email,
+		Nickname:      req.Nickname,
+		WeChatOpenID:  req.WeChatOpenID,
+		WeChatUnionID: req.WeChatUnionID,
 	}
 	// 设置租户ID
 	user.TenantID = tenantID
@@ -262,6 +284,14 @@ func (s *userServiceImpl) UpdateProfile(ctx context.Context, userID uint64, req 
 		updates["avatar"] = req.Avatar
 	}
 
+	if req.WeChatOpenID != "" {
+		updates["wechat_openid"] = req.WeChatOpenID
+	}
+
+	if req.WeChatUnionID != "" {
+		updates["wechat_unionid"] = req.WeChatUnionID
+	}
+
 	// 如果没有要更新的字段，直接返回
 	if len(updates) == 0 {
 		return nil
@@ -287,7 +317,7 @@ func (s *userServiceImpl) UpdateProfile(ctx context.Context, userID uint64, req 
 // ChangePassword 修改密码
 func (s *userServiceImpl) ChangePassword(ctx context.Context, userID uint64, req *ChangePasswordRequest) error {
 	// 验证新密码强度
-	if err := models.ValidatePassword(req.NewPassword); err != nil {
+	if err := utils.ValidatePassword(req.NewPassword); err != nil {
 		return err
 	}
 
@@ -550,7 +580,7 @@ func (s *userServiceImpl) validateRegisterRequest(req *RegisterRequest) error {
 	}
 
 	// 验证密码强度
-	if err := models.ValidatePassword(req.Password); err != nil {
+	if err := utils.ValidatePassword(req.Password); err != nil {
 		return err
 	}
 
@@ -613,4 +643,32 @@ func validateEmail(email string) error {
 	}
 
 	return nil
+}
+
+// GetByWeChatOpenID 根据微信OpenID查找用户
+func (s *userServiceImpl) GetByWeChatOpenID(ctx context.Context, openID string) (*models.User, error) {
+	var user models.User
+	err := s.db.WithContext(ctx).
+		Where("wechat_openid = ? AND tenant_id = ?", openID, database.GetTenantIDFromContext(ctx)).
+		First(&user).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, common.ErrUserNotFound
+		}
+		return nil, fmt.Errorf("查询用户失败: %w", err)
+	}
+
+	return &user, nil
+}
+
+// IsWeChatOpenIDExists 检查微信OpenID是否存在
+func (s *userServiceImpl) IsWeChatOpenIDExists(ctx context.Context, openID string) (bool, error) {
+	var count int64
+	err := s.db.WithContext(ctx).
+		Model(&models.User{}).
+		Where("wechat_openid = ? AND tenant_id = ?", openID, database.GetTenantIDFromContext(ctx)).
+		Count(&count).Error
+
+	return count > 0, err
 }

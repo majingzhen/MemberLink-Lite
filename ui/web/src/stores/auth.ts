@@ -142,22 +142,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // 微信登录
-  async function wechatLogin(code: string) {
-    try {
-      loading.value = true
-      const response = await authApi.wechatCallback({ code })
-      setUserInfo(response.data.user, response.data.tokens.access_token, response.data.tokens.refresh_token)
-      showSuccess('微信登录成功')
-      return response
-    } catch (error) {
-      console.error('微信登录失败:', error)
-      throw error
-    } finally {
-      loading.value = false
-    }
-  }
-
   // 上传头像
   async function uploadAvatar(file: File) {
     try {
@@ -197,7 +181,6 @@ export const useAuthStore = defineStore('auth', () => {
     refreshTokenAction,
     fetchUserInfo,
     initAuth,
-    wechatLogin,
     uploadAvatar
   }
 })

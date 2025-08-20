@@ -37,7 +37,7 @@ const (
 
 // TableName 指定表名
 func (BalanceRecord) TableName() string {
-	return "balance_records"
+	return "m_balance_records"
 }
 
 // BeforeCreate GORM钩子：创建前处理

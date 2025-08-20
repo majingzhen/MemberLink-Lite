@@ -39,7 +39,7 @@ const (
 
 // TableName 指定表名
 func (PointsRecord) TableName() string {
-	return "points_records"
+	return "m_points_records"
 }
 
 // BeforeCreate GORM钩子：创建前处理

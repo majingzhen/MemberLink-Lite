@@ -8,6 +8,7 @@ import (
 	"member-link-lite/config"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -35,34 +36,35 @@ type WeChatUserInfo struct {
 	Province string `json:"province"` // 省份
 	City     string `json:"city"`     // 城市
 	Country  string `json:"country"`  // 国家
+	Phone    string `json:"phone"`    // 手机号
 }
 
-// GetAuthURL 获取微信授权URL
-func (s *WeChatAuthService) GetAuthURL(tenantID, redirectURI string) (string, error) {
-	// 检查微信授权是否启用
-	if !s.isEnabled(tenantID) {
-		return "", fmt.Errorf("微信授权登录未启用")
-	}
-
-	appID := s.getAppID(tenantID)
-	if appID == "" {
-		return "", fmt.Errorf("微信AppID未配置")
-	}
-
-	// 构建授权URL
-	params := url.Values{}
-	params.Set("appid", appID)
-	params.Set("redirect_uri", redirectURI)
-	params.Set("response_type", "code")
-	params.Set("scope", "snsapi_userinfo")
-	params.Set("state", tenantID) // 使用tenantID作为state参数
-
-	authURL := fmt.Sprintf("https://open.weixin.qq.com/connect/oauth2/authorize?%s#wechat_redirect", params.Encode())
-	return authURL, nil
+// WeChatMiniProgramSessionResponse 微信小程序会话响应
+type WeChatMiniProgramSessionResponse struct {
+	OpenID     string `json:"openid"`
+	SessionKey string `json:"session_key"`
+	UnionID    string `json:"unionid"`
+	ErrCode    int    `json:"errcode"`
+	ErrMsg     string `json:"errmsg"`
 }
 
-// HandleCallback 处理微信回调
-func (s *WeChatAuthService) HandleCallback(ctx context.Context, code, tenantID string) (*WeChatUserInfo, error) {
+// WeChatPhoneInfoResponse 微信手机号信息响应
+type WeChatPhoneInfoResponse struct {
+	PhoneInfo struct {
+		PhoneNumber     string `json:"phoneNumber"`     // 手机号
+		PurePhoneNumber string `json:"purePhoneNumber"` // 纯手机号
+		CountryCode     string `json:"countryCode"`     // 国家代码
+		Watermark       struct {
+			Timestamp int64  `json:"timestamp"`
+			AppID     string `json:"appid"`
+		} `json:"watermark"`
+	} `json:"phone_info"`
+	ErrCode int    `json:"errcode"`
+	ErrMsg  string `json:"errmsg"`
+}
+
+// HandleMiniProgramLogin 处理微信小程序登录
+func (s *WeChatAuthService) HandleMiniProgramLogin(ctx context.Context, code, tenantID string) (*WeChatUserInfo, error) {
 	// 检查微信授权是否启用
 	if !s.isEnabled(tenantID) {
 		return nil, fmt.Errorf("微信授权登录未启用")
@@ -74,19 +76,54 @@ func (s *WeChatAuthService) HandleCallback(ctx context.Context, code, tenantID s
 		return nil, fmt.Errorf("微信配置不完整")
 	}
 
-	// 1. 获取访问令牌
-	tokenInfo, err := s.getAccessToken(ctx, code, appID, appSecret)
+	// 1. 使用jscode2session获取openid和session_key
+	sessionInfo, err := s.getMiniProgramSession(ctx, code, appID, appSecret)
 	if err != nil {
-		return nil, fmt.Errorf("获取访问令牌失败: %w", err)
+		return nil, fmt.Errorf("获取小程序会话失败: %w", err)
 	}
 
-	// 2. 获取用户信息
-	userInfo, err := s.getUserInfo(ctx, tokenInfo.AccessToken, tokenInfo.OpenID)
-	if err != nil {
-		return nil, fmt.Errorf("获取用户信息失败: %w", err)
+	// 2. 构造用户信息（小程序登录无法获取详细用户信息，使用默认值）
+	userInfo := &WeChatUserInfo{
+		OpenID:   sessionInfo.OpenID,
+		UnionID:  sessionInfo.UnionID,
+		Nickname: "微信用户", // 小程序登录无法获取昵称，使用默认值
+		Avatar:   "",     // 小程序登录无法获取头像
+		Gender:   0,      // 未知性别
+		Province: "",
+		City:     "",
+		Country:  "",
+		Phone:    "", // 手机号需要通过单独的接口获取
 	}
 
 	return userInfo, nil
+}
+
+// GetPhoneNumber 获取微信手机号
+func (s *WeChatAuthService) GetPhoneNumber(ctx context.Context, code, tenantID string) (string, error) {
+	// 检查微信授权是否启用
+	if !s.isEnabled(tenantID) {
+		return "", fmt.Errorf("微信授权登录未启用")
+	}
+
+	appID := s.getAppID(tenantID)
+	appSecret := s.getAppSecret(tenantID)
+	if appID == "" || appSecret == "" {
+		return "", fmt.Errorf("微信配置不完整")
+	}
+
+	// 1. 获取access_token
+	accessToken, err := s.getAccessToken(ctx, appID, appSecret)
+	if err != nil {
+		return "", fmt.Errorf("获取access_token失败: %w", err)
+	}
+
+	// 2. 使用code获取手机号
+	phoneInfo, err := s.getPhoneNumberByCode(ctx, code, accessToken)
+	if err != nil {
+		return "", fmt.Errorf("获取手机号失败: %w", err)
+	}
+
+	return phoneInfo.PhoneInfo.PhoneNumber, nil
 }
 
 // isEnabled 检查微信授权是否启用
@@ -129,160 +166,6 @@ func (s *WeChatAuthService) getAppSecret(tenantID string) string {
 	return config.GetString("wechat.app_secret")
 }
 
-// WeChatTokenResponse 微信令牌响应
-type WeChatTokenResponse struct {
-	AccessToken  string `json:"access_token"`
-	ExpiresIn    int64  `json:"expires_in"`
-	RefreshToken string `json:"refresh_token"`
-	OpenID       string `json:"openid"`
-	Scope        string `json:"scope"`
-	UnionID      string `json:"unionid"`
-	ErrCode      int    `json:"errcode"`
-	ErrMsg       string `json:"errmsg"`
-}
-
-// WeChatUserInfoResponse 微信用户信息响应
-type WeChatUserInfoResponse struct {
-	OpenID     string   `json:"openid"`
-	UnionID    string   `json:"unionid"`
-	Nickname   string   `json:"nickname"`
-	Sex        int      `json:"sex"`
-	Province   string   `json:"province"`
-	City       string   `json:"city"`
-	Country    string   `json:"country"`
-	HeadImgURL string   `json:"headimgurl"`
-	Privilege  []string `json:"privilege"`
-	ErrCode    int      `json:"errcode"`
-	ErrMsg     string   `json:"errmsg"`
-}
-
-// getAccessToken 获取微信访问令牌
-func (s *WeChatAuthService) getAccessToken(ctx context.Context, code, appID, appSecret string) (*WeChatTokenResponse, error) {
-	params := url.Values{}
-	params.Set("appid", appID)
-	params.Set("secret", appSecret)
-	params.Set("code", code)
-	params.Set("grant_type", "authorization_code")
-
-	tokenURL := fmt.Sprintf("https://api.weixin.qq.com/sns/oauth2/access_token?%s", params.Encode())
-
-	req, err := http.NewRequestWithContext(ctx, "GET", tokenURL, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := s.client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var tokenResp WeChatTokenResponse
-	if err := json.Unmarshal(body, &tokenResp); err != nil {
-		return nil, err
-	}
-
-	if tokenResp.ErrCode != 0 {
-		return nil, fmt.Errorf("微信API错误: %d - %s", tokenResp.ErrCode, tokenResp.ErrMsg)
-	}
-
-	return &tokenResp, nil
-}
-
-// getUserInfo 获取微信用户信息
-func (s *WeChatAuthService) getUserInfo(ctx context.Context, accessToken, openID string) (*WeChatUserInfo, error) {
-	params := url.Values{}
-	params.Set("access_token", accessToken)
-	params.Set("openid", openID)
-	params.Set("lang", "zh_CN")
-
-	userInfoURL := fmt.Sprintf("https://api.weixin.qq.com/sns/userinfo?%s", params.Encode())
-
-	req, err := http.NewRequestWithContext(ctx, "GET", userInfoURL, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := s.client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var userInfoResp WeChatUserInfoResponse
-	if err := json.Unmarshal(body, &userInfoResp); err != nil {
-		return nil, err
-	}
-
-	if userInfoResp.ErrCode != 0 {
-		return nil, fmt.Errorf("微信API错误: %d - %s", userInfoResp.ErrCode, userInfoResp.ErrMsg)
-	}
-
-	return &WeChatUserInfo{
-		OpenID:   userInfoResp.OpenID,
-		UnionID:  userInfoResp.UnionID,
-		Nickname: userInfoResp.Nickname,
-		Avatar:   userInfoResp.HeadImgURL,
-		Gender:   userInfoResp.Sex,
-		Province: userInfoResp.Province,
-		City:     userInfoResp.City,
-		Country:  userInfoResp.Country,
-	}, nil
-}
-
-// WeChatMiniProgramSessionResponse 微信小程序会话响应
-type WeChatMiniProgramSessionResponse struct {
-	OpenID     string `json:"openid"`
-	SessionKey string `json:"session_key"`
-	UnionID    string `json:"unionid"`
-	ErrCode    int    `json:"errcode"`
-	ErrMsg     string `json:"errmsg"`
-}
-
-// HandleMiniProgramLogin 处理微信小程序登录
-func (s *WeChatAuthService) HandleMiniProgramLogin(ctx context.Context, code, tenantID string) (*WeChatUserInfo, error) {
-	// 检查微信授权是否启用
-	if !s.isEnabled(tenantID) {
-		return nil, fmt.Errorf("微信授权登录未启用")
-	}
-
-	appID := s.getAppID(tenantID)
-	appSecret := s.getAppSecret(tenantID)
-	if appID == "" || appSecret == "" {
-		return nil, fmt.Errorf("微信配置不完整")
-	}
-
-	// 1. 使用jscode2session获取openid和session_key
-	sessionInfo, err := s.getMiniProgramSession(ctx, code, appID, appSecret)
-	if err != nil {
-		return nil, fmt.Errorf("获取小程序会话失败: %w", err)
-	}
-
-	// 2. 构造用户信息（小程序登录无法获取详细用户信息，使用默认值）
-	userInfo := &WeChatUserInfo{
-		OpenID:   sessionInfo.OpenID,
-		UnionID:  sessionInfo.UnionID,
-		Nickname: "微信用户", // 小程序登录无法获取昵称，使用默认值
-		Avatar:   "",     // 小程序登录无法获取头像
-		Gender:   0,      // 未知性别
-		Province: "",
-		City:     "",
-		Country:  "",
-	}
-
-	return userInfo, nil
-}
-
 // getMiniProgramSession 获取微信小程序会话信息
 func (s *WeChatAuthService) getMiniProgramSession(ctx context.Context, code, appID, appSecret string) (*WeChatMiniProgramSessionResponse, error) {
 	params := url.Values{}
@@ -321,21 +204,16 @@ func (s *WeChatAuthService) getMiniProgramSession(ctx context.Context, code, app
 	return &sessionResp, nil
 }
 
-// RefreshToken 刷新访问令牌
-func (s *WeChatAuthService) RefreshToken(ctx context.Context, refreshToken, tenantID string) (string, error) {
-	appID := s.getAppID(tenantID)
-	if appID == "" {
-		return "", fmt.Errorf("微信AppID未配置")
-	}
-
+// getAccessToken 获取微信access_token
+func (s *WeChatAuthService) getAccessToken(ctx context.Context, appID, appSecret string) (string, error) {
 	params := url.Values{}
+	params.Set("grant_type", "client_credential")
 	params.Set("appid", appID)
-	params.Set("grant_type", "refresh_token")
-	params.Set("refresh_token", refreshToken)
+	params.Set("secret", appSecret)
 
-	refreshURL := fmt.Sprintf("https://api.weixin.qq.com/sns/oauth2/refresh_token?%s", params.Encode())
+	tokenURL := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/token?%s", params.Encode())
 
-	req, err := http.NewRequestWithContext(ctx, "GET", refreshURL, nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", tokenURL, nil)
 	if err != nil {
 		return "", err
 	}
@@ -351,7 +229,13 @@ func (s *WeChatAuthService) RefreshToken(ctx context.Context, refreshToken, tena
 		return "", err
 	}
 
-	var tokenResp WeChatTokenResponse
+	var tokenResp struct {
+		AccessToken string `json:"access_token"`
+		ExpiresIn   int64  `json:"expires_in"`
+		ErrCode     int    `json:"errcode"`
+		ErrMsg      string `json:"errmsg"`
+	}
+
 	if err := json.Unmarshal(body, &tokenResp); err != nil {
 		return "", err
 	}
@@ -361,4 +245,49 @@ func (s *WeChatAuthService) RefreshToken(ctx context.Context, refreshToken, tena
 	}
 
 	return tokenResp.AccessToken, nil
+}
+
+// getPhoneNumberByCode 通过code获取手机号
+func (s *WeChatAuthService) getPhoneNumberByCode(ctx context.Context, code, accessToken string) (*WeChatPhoneInfoResponse, error) {
+	phoneURL := fmt.Sprintf("https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=%s", accessToken)
+
+	// 构建请求体
+	requestBody := map[string]string{
+		"code": code,
+	}
+
+	jsonBody, err := json.Marshal(requestBody)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", phoneURL, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Body = io.NopCloser(strings.NewReader(string(jsonBody)))
+
+	resp, err := s.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var phoneResp WeChatPhoneInfoResponse
+	if err := json.Unmarshal(body, &phoneResp); err != nil {
+		return nil, err
+	}
+
+	if phoneResp.ErrCode != 0 {
+		return nil, fmt.Errorf("微信API错误: %d - %s", phoneResp.ErrCode, phoneResp.ErrMsg)
+	}
+
+	return &phoneResp, nil
 }

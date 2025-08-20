@@ -10,11 +10,11 @@ import (
 func RegisterWeChatAuthRoutes(r *gin.RouterGroup) {
 	wechatAuthController := controllers.NewWeChatAuthController()
 
-	// 微信授权登录路由组
+	// 微信小程序登录路由组
 	wechatGroup := r.Group("/auth/wechat")
 	{
-		wechatGroup.GET("/auth", wechatAuthController.GetAuthURL)                       // 获取微信授权URL
-		wechatGroup.GET("/callback", wechatAuthController.HandleCallback)               // 处理微信回调
-		wechatGroup.GET("/jscode2session", wechatAuthController.HandleMiniProgramLogin) // 处理微信小程序登录
+		wechatGroup.GET("/jscode2session", wechatAuthController.HandleMiniProgramLogin)             // 处理微信小程序登录
+		wechatGroup.GET("/phone", wechatAuthController.GetPhoneNumber)                              // 获取微信手机号
+		wechatGroup.POST("/login-with-phone", wechatAuthController.HandleMiniProgramLoginWithPhone) // 处理微信小程序登录（包含手机号）
 	}
 }

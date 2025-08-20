@@ -68,7 +68,7 @@ const (
 
 // TableName 指定表名
 func (File) TableName() string {
-	return "files"
+	return "m_files"
 }
 
 // BeforeCreate GORM钩子：创建前处理

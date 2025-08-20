@@ -8,17 +8,8 @@
             <p class="auth-subtitle">欢迎回来，请登录您的账号</p>
           </div>
 
-          <!-- 登录方式切换 -->
-          <div class="login-type-switch">
-            <el-radio-group v-model="loginType" @change="handleLoginTypeChange">
-              <el-radio-button label="password">密码登录</el-radio-button>
-              <el-radio-button label="wechat">微信登录</el-radio-button>
-            </el-radio-group>
-          </div>
-
           <!-- 密码登录表单 -->
           <el-form
-            v-if="loginType === 'password'"
             ref="loginFormRef"
             :model="loginForm"
             :rules="loginRules"
@@ -55,31 +46,12 @@
             </el-form-item>
           </el-form>
 
-          <!-- 微信登录 -->
-          <div v-if="loginType === 'wechat'" class="wechat-login">
-            <div class="wechat-login-content">
-              <div class="wechat-icon">
-                <i class="fab fa-weixin"></i>
-              </div>
-              <p class="wechat-tip">点击下方按钮使用微信登录</p>
-              <el-button
-                type="success"
-                class="wechat-button"
-                :loading="wechatLoading"
-                @click="handleWechatLogin"
-              >
-                <i class="fab fa-weixin"></i>
-                微信登录
-              </el-button>
-            </div>
-          </div>
-
           <div class="auth-footer">
             <p>
               还没有账号？
               <router-link to="/register" class="auth-link">立即注册</router-link>
             </p>
-            <p v-if="loginType === 'password'">
+            <p>
               <a href="#" class="auth-link" @click.prevent="handleForgotPassword">忘记密码？</a>
             </p>
           </div>
@@ -104,8 +76,6 @@ const authStore = useAuthStore()
 
 // 响应式数据
 const loading = ref(false)
-const wechatLoading = ref(false)
-const loginType = ref('password')
 const loginFormRef = ref<FormInstance>()
 
 const loginForm = reactive({
@@ -130,23 +100,7 @@ onMounted(() => {
   if (tenantId) {
     setTenantId(tenantId)
   }
-
-  // 检查微信回调
-  const code = route.query.code as string
-  const state = route.query.state as string
-  if (code) {
-    handleWechatCallback(code, state)
-  }
 })
-
-// 登录方式切换
-const handleLoginTypeChange = (type: string) => {
-  loginType.value = type
-  // 清除表单错误
-  if (loginFormRef.value) {
-    loginFormRef.value.clearValidate()
-  }
-}
 
 // 密码登录
 const handlePasswordLogin = async () => {
@@ -183,50 +137,6 @@ const handlePasswordLogin = async () => {
     }
   } catch (error: any) {
     console.error('登录失败:', error)
-    showError(error)
-  } finally {
-    loading.value = false
-  }
-}
-
-// 微信登录
-const handleWechatLogin = async () => {
-  try {
-    wechatLoading.value = true
-    
-    // 获取微信授权URL
-    const currentUrl = window.location.origin + window.location.pathname
-    const authUrl = `http://localhost:8080/api/v1/auth/wechat/auth?redirect_uri=${encodeURIComponent(currentUrl)}`
-    
-    // 跳转到微信授权页面
-    window.location.href = authUrl
-  } catch (error: any) {
-    console.error('微信登录失败:', error)
-    showError(error)
-  } finally {
-    wechatLoading.value = false
-  }
-}
-
-// 处理微信回调
-const handleWechatCallback = async (code: string, state?: string) => {
-  try {
-    loading.value = true
-    
-    await authStore.wechatLogin(code)
-    
-    // 等待一下让状态更新
-    await new Promise(resolve => setTimeout(resolve, 100))
-    
-    // 检查是否有重定向路径
-    const redirect = route.query.redirect as string
-    if (redirect) {
-      await router.push(redirect)
-    } else {
-      await router.push('/')
-    }
-  } catch (error: any) {
-    console.error('微信回调处理失败:', error)
     showError(error)
   } finally {
     loading.value = false
@@ -302,43 +212,5 @@ const handleForgotPassword = () => {
 
 .auth-link:hover {
   text-decoration: underline;
-}
-
-.login-type-switch {
-  margin-bottom: 24px;
-  text-align: center;
-}
-
-.wechat-login {
-  padding: 40px 0;
-}
-
-.wechat-login-content {
-  text-align: center;
-}
-
-.wechat-icon {
-  font-size: 48px;
-  color: #07c160;
-  margin-bottom: 16px;
-}
-
-.wechat-tip {
-  color: var(--text-regular);
-  margin-bottom: 24px;
-}
-
-.wechat-button {
-  width: 100%;
-  height: 48px;
-  font-size: 16px;
-  font-weight: 500;
-  background-color: #07c160;
-  border-color: #07c160;
-}
-
-.wechat-button:hover {
-  background-color: #06ad56;
-  border-color: #06ad56;
 }
 </style>
