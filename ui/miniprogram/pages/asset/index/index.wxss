@@ -3,34 +3,71 @@
 .asset-container {
   min-height: 100vh;
   padding: 32rpx;
+  position: relative;
+}
+
+/* 浮动装饰元素 */
+.asset-container::before {
+  content: '';
+  position: fixed;
+  top: 15%;
+  right: 10%;
+  width: 180rpx;
+  height: 180rpx;
+  border-radius: 50%;
+  background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
+  opacity: 0.1;
+  animation: float 6s ease-in-out infinite;
+  z-index: -1;
+}
+
+.asset-container::after {
+  content: '';
+  position: fixed;
+  bottom: 25%;
+  left: 10%;
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+  opacity: 0.08;
+  animation: float 8s ease-in-out infinite reverse;
+  z-index: -1;
 }
 
 /* 未登录状态 */
 .not-login {
   margin-top: 200rpx;
+  animation: fadeIn 0.8s ease-out;
 }
 
 .not-login-content {
   text-align: center;
   padding: 48rpx 32rpx;
+  position: relative;
 }
 
 .login-icon {
   font-size: 120rpx;
   margin-bottom: 32rpx;
   opacity: 0.8;
+  animation: bounce 2s infinite;
 }
 
 .login-title {
   font-size: 36rpx;
-  font-weight: 500;
-  color: #303133;
+  font-weight: 600;
+  color: var(--text-primary);
   margin-bottom: 16rpx;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .login-desc {
   font-size: 28rpx;
-  color: #606266;
+  color: var(--text-regular);
   margin-bottom: 48rpx;
   line-height: 1.5;
 }
@@ -38,23 +75,35 @@
 /* 资产概览 */
 .asset-overview {
   margin-bottom: 48rpx;
+  animation: slideInUp 0.6s ease-out;
 }
 
 .overview-header {
   text-align: center;
   margin-bottom: 32rpx;
+  position: relative;
+}
+
+.header-emoji {
+  font-size: 80rpx;
+  margin-bottom: 16rpx;
+  animation: pulse 2s infinite;
 }
 
 .header-title {
   font-size: 48rpx;
   font-weight: bold;
-  color: #303133;
+  color: var(--text-primary);
   margin-bottom: 8rpx;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .header-subtitle {
   font-size: 24rpx;
-  color: #909399;
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 2rpx;
 }
@@ -66,15 +115,56 @@
   gap: 24rpx;
 }
 
+.balance-card {
+  background: linear-gradient(135deg, rgba(81, 207, 102, 0.1) 0%, rgba(78, 205, 196, 0.1) 100%);
+  border: 2rpx solid rgba(81, 207, 102, 0.2);
+}
+
+.points-card {
+  background: linear-gradient(135deg, rgba(255, 212, 59, 0.1) 0%, rgba(255, 230, 109, 0.1) 100%);
+  border: 2rpx solid rgba(255, 212, 59, 0.2);
+}
+
 .asset-card-content {
   display: flex;
   align-items: center;
   padding: 16rpx 0;
+  position: relative;
+}
+
+.asset-icon-container {
+  position: relative;
+  margin-right: 32rpx;
+  display: inline-block;
 }
 
 .asset-icon {
   font-size: 64rpx;
-  margin-right: 32rpx;
+  position: relative;
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+
+.icon-bg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 80rpx;
+  height: 80rpx;
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.1;
+  transition: all 0.3s ease;
+}
+
+.asset-card-content:active .icon-bg {
+  transform: translate(-50%, -50%) scale(1.2);
+  opacity: 0.2;
+}
+
+.asset-card-content:active .asset-icon {
+  transform: scale(1.1);
 }
 
 .asset-info {
@@ -83,34 +173,73 @@
 
 .asset-label {
   font-size: 28rpx;
-  color: #606266;
+  color: var(--text-regular);
   margin-bottom: 8rpx;
+  font-weight: 500;
 }
 
 .asset-value {
   font-size: 48rpx;
   font-weight: bold;
-  color: #303133;
+  color: var(--text-primary);
   margin-bottom: 8rpx;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .asset-desc {
   font-size: 24rpx;
-  color: #909399;
+  color: var(--text-secondary);
+}
+
+.card-arrow {
+  font-size: 24rpx;
+  color: var(--primary-color);
+  font-weight: bold;
+  transition: transform 0.3s ease;
+}
+
+.asset-card-content:active .card-arrow {
+  transform: translateX(8rpx);
 }
 
 /* 快捷操作 */
 .quick-actions {
   margin-bottom: 48rpx;
+  animation: slideInUp 0.8s ease-out;
+}
+
+.section-header {
+  margin-bottom: 24rpx;
 }
 
 .section-title {
   font-size: 32rpx;
-  font-weight: 500;
-  color: #303133;
-  margin-bottom: 24rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8rpx;
   padding-left: 16rpx;
-  border-left: 8rpx solid #667eea;
+  border-left: 8rpx solid var(--primary-color);
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -4rpx;
+  left: 16rpx;
+  width: 60rpx;
+  height: 2rpx;
+  background: var(--primary-gradient);
+  animation: expand 2s ease-out;
+}
+
+.section-subtitle {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  padding-left: 24rpx;
 }
 
 .actions-grid {
@@ -119,31 +248,80 @@
   gap: 24rpx;
 }
 
+.action-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.action-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.action-card:active::before {
+  left: 100%;
+}
+
+.action-card:active {
+  transform: scale(0.95) translateY(-4rpx);
+}
+
 .action-content {
   text-align: center;
   padding: 24rpx 16rpx;
 }
 
+.action-icon-container {
+  position: relative;
+  margin-bottom: 16rpx;
+  display: inline-block;
+}
+
 .action-icon {
   font-size: 48rpx;
-  margin-bottom: 16rpx;
+  position: relative;
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+
+.action-icon-container .icon-bg {
+  width: 60rpx;
+  height: 60rpx;
+  opacity: 0.15;
+}
+
+.action-card:active .action-icon {
+  transform: scale(1.1);
 }
 
 .action-title {
   font-size: 28rpx;
-  font-weight: 500;
-  color: #303133;
+  font-weight: 600;
+  color: var(--text-primary);
   margin-bottom: 8rpx;
 }
 
 .action-desc {
   font-size: 24rpx;
-  color: #909399;
+  color: var(--text-secondary);
 }
 
 /* 资产统计 */
 .asset-stats {
-  margin-bottom: 32rpx;
+  margin-bottom: 48rpx;
+  animation: slideInUp 1s ease-out;
+}
+
+.stats-card {
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(78, 205, 196, 0.1) 100%);
+  border: 2rpx solid rgba(255, 107, 107, 0.2);
 }
 
 .stats-content {
@@ -157,11 +335,34 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.stats-item:active {
+  transform: scale(1.05);
+}
+
+.stats-icon-container {
+  position: relative;
+  margin-right: 16rpx;
+  display: inline-block;
 }
 
 .stats-icon {
   font-size: 40rpx;
-  margin-right: 16rpx;
+  position: relative;
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+
+.stats-icon-container .icon-bg {
+  width: 50rpx;
+  height: 50rpx;
+  opacity: 0.1;
+}
+
+.stats-item:active .stats-icon {
+  transform: scale(1.1);
 }
 
 .stats-info {
@@ -170,21 +371,62 @@
 
 .stats-label {
   font-size: 24rpx;
-  color: #909399;
+  color: var(--text-secondary);
   margin-bottom: 8rpx;
+  font-weight: 500;
 }
 
 .stats-value {
   font-size: 32rpx;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-primary);
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .stats-divider {
   width: 2rpx;
   height: 64rpx;
-  background: rgba(0, 0, 0, 0.1);
+  background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
   margin: 0 24rpx;
+  border-radius: 1rpx;
+}
+
+/* 资产小贴士 */
+.asset-tips {
+  margin-bottom: 32rpx;
+  animation: slideInUp 1.2s ease-out;
+}
+
+.tip-card {
+  background: linear-gradient(135deg, rgba(255, 230, 109, 0.1) 0%, rgba(255, 212, 59, 0.1) 100%);
+  border: 2rpx solid rgba(255, 230, 109, 0.2);
+}
+
+.tip-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.tip-icon {
+  font-size: 40rpx;
+  margin-right: 16rpx;
+  animation: pulse 2s infinite;
+}
+
+.tip-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.tip-content {
+  font-size: 28rpx;
+  color: var(--text-regular);
+  line-height: 1.6;
 }
 
 /* 响应式适配 */
@@ -202,7 +444,7 @@
     text-align: center;
   }
   
-  .asset-icon {
+  .asset-icon-container {
     margin-right: 0;
     margin-bottom: 16rpx;
   }
@@ -216,5 +458,9 @@
     width: 100%;
     height: 2rpx;
     margin: 0;
+  }
+  
+  .card-arrow {
+    display: none;
   }
 }

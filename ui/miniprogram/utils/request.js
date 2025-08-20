@@ -79,7 +79,8 @@ function responseInterceptor(res, options) {
     return Promise.reject(error)
   }
 
-  return data
+  // 返回成功数据
+  return Promise.resolve(data)
 }
 
 // 错误处理器

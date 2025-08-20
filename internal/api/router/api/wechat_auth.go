@@ -13,7 +13,8 @@ func RegisterWeChatAuthRoutes(r *gin.RouterGroup) {
 	// 微信授权登录路由组
 	wechatGroup := r.Group("/auth/wechat")
 	{
-		wechatGroup.GET("/auth", wechatAuthController.GetAuthURL)       // 获取微信授权URL
-		wechatGroup.GET("/callback", wechatAuthController.HandleCallback) // 处理微信回调
+		wechatGroup.GET("/auth", wechatAuthController.GetAuthURL)                       // 获取微信授权URL
+		wechatGroup.GET("/callback", wechatAuthController.HandleCallback)               // 处理微信回调
+		wechatGroup.GET("/jscode2session", wechatAuthController.HandleMiniProgramLogin) // 处理微信小程序登录
 	}
 }

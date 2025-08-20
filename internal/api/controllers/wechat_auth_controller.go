@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"member-link-lite/internal/api/middleware"
 	"member-link-lite/internal/models"
@@ -105,12 +106,71 @@ func (c *WeChatAuthController) HandleCallback(ctx *gin.Context) {
 	}
 
 	response := WeChatLoginResponse{
-		Token:        tokenResponse.AccessToken,
-		RefreshToken: tokenResponse.RefreshToken,
-		ExpiresIn:    tokenResponse.ExpiresIn,
-		User:         user,
-		IsNewUser:    isNewUser,
-		WeChatInfo:   wechatUserInfo,
+		Tokens: &TokenInfo{
+			AccessToken:  tokenResponse.AccessToken,
+			RefreshToken: tokenResponse.RefreshToken,
+			ExpiresIn:    tokenResponse.ExpiresIn,
+		},
+		User:       user,
+		IsNewUser:  isNewUser,
+		WeChatInfo: wechatUserInfo,
+	}
+
+	common.SuccessWithMessage(ctx, "登录成功", response)
+}
+
+// HandleMiniProgramLogin 处理微信小程序登录
+// @Summary 处理微信小程序登录
+// @Description 处理微信小程序登录，使用jscode2session接口
+// @Tags 微信授权
+// @Accept json
+// @Produce json
+// @Param code query string true "微信小程序登录码"
+// @Param X-Tenant-ID header string false "租户ID" default(default)
+// @Success 200 {object} common.APIResponse{data=WeChatLoginResponse} "登录成功"
+// @Failure 400 {object} common.APIResponse "参数错误"
+// @Failure 401 {object} common.APIResponse "授权失败"
+// @Router /auth/wechat/jscode2session [get]
+func (c *WeChatAuthController) HandleMiniProgramLogin(ctx *gin.Context) {
+	code := ctx.Query("code")
+
+	if code == "" {
+		common.BadRequest(ctx, "登录码不能为空")
+		return
+	}
+
+	tenantID := middleware.GetSimpleTenantID(ctx)
+
+	// 处理微信小程序登录，获取用户信息
+	wechatUserInfo, err := c.wechatService.HandleMiniProgramLogin(ctx.Request.Context(), code, tenantID)
+	if err != nil {
+		common.Unauthorized(ctx, "微信授权失败: "+err.Error())
+		return
+	}
+
+	// 查找或创建用户
+	user, isNewUser, err := c.findOrCreateUser(ctx, wechatUserInfo, tenantID)
+	if err != nil {
+		common.ServerError(ctx, "用户处理失败: "+err.Error())
+		return
+	}
+
+	// 生成JWT令牌
+	tokenResponse, err := services.GenerateTokenPair(c.jwtService, user.ID, user.Username)
+	if err != nil {
+		common.ServerError(ctx, "令牌生成失败: "+err.Error())
+		return
+	}
+
+	response := WeChatLoginResponse{
+		Tokens: &TokenInfo{
+			AccessToken:  tokenResponse.AccessToken,
+			RefreshToken: tokenResponse.RefreshToken,
+			ExpiresIn:    tokenResponse.ExpiresIn,
+		},
+		User:       user,
+		IsNewUser:  isNewUser,
+		WeChatInfo: wechatUserInfo,
 	}
 
 	common.SuccessWithMessage(ctx, "登录成功", response)
@@ -118,8 +178,13 @@ func (c *WeChatAuthController) HandleCallback(ctx *gin.Context) {
 
 // findOrCreateUser 查找或创建用户
 func (c *WeChatAuthController) findOrCreateUser(ctx *gin.Context, wechatUserInfo *services.WeChatUserInfo, tenantID string) (*models.User, bool, error) {
-	// 生成唯一的用户名（微信 + OpenID）
-	username := "wechat_" + wechatUserInfo.OpenID
+	// 生成唯一的用户名（微信 + OpenID的hash值，确保长度合适）
+	// 使用openid的hash值生成短用户名，避免超过数据库字段长度限制
+	hash := 0
+	for _, char := range wechatUserInfo.OpenID {
+		hash = (hash*31 + int(char)) % 100000000
+	}
+	username := fmt.Sprintf("wx_%d", hash%1000000) // 格式：wx_123456
 
 	// 尝试查找现有用户
 	existingUser, err := c.userService.GetByUsername(ctx.Request.Context(), username)
@@ -136,10 +201,23 @@ func (c *WeChatAuthController) findOrCreateUser(ctx *gin.Context, wechatUserInfo
 	}
 
 	// 用户不存在，创建新用户
+	// 为微信用户生成唯一的手机号和邮箱
+	// 使用openid的hash值生成11位手机号，确保唯一性和格式正确
+	// 生成11位手机号：138 + 8位数字
+	defaultPhone := fmt.Sprintf("138%08d", hash%100000000)
+	defaultEmail := fmt.Sprintf("wx_%d@miniprogram.com", hash%1000000) // 生成唯一的邮箱
+
+	// 生成符合要求的密码：包含字母和数字
+	// 使用openid的hash值生成数字部分，确保唯一性
+	passwordNum := hash % 1000000                           // 6位数字
+	defaultPassword := fmt.Sprintf("wechat%d", passwordNum) // 包含字母和数字
+
 	registerReq := &services.RegisterRequest{
 		Username: username,
-		Password: "wechat_user_" + wechatUserInfo.OpenID, // 微信用户使用特殊密码
+		Password: defaultPassword, // 微信用户使用符合要求的密码
 		Nickname: wechatUserInfo.Nickname,
+		Phone:    defaultPhone,
+		Email:    defaultEmail,
 	}
 
 	newUser, err := c.userService.Register(ctx.Request.Context(), registerReq)
@@ -165,10 +243,15 @@ type WeChatAuthURLResponse struct {
 
 // WeChatLoginResponse 微信登录响应
 type WeChatLoginResponse struct {
-	Token        string                   `json:"token"`         // 访问令牌
-	RefreshToken string                   `json:"refresh_token"` // 刷新令牌
-	ExpiresIn    int64                    `json:"expires_in"`    // 过期时间（秒）
-	User         *models.User             `json:"user"`          // 用户信息
-	IsNewUser    bool                     `json:"is_new_user"`   // 是否为新用户
-	WeChatInfo   *services.WeChatUserInfo `json:"wechat_info"`   // 微信用户信息
+	Tokens     *TokenInfo               `json:"tokens"`      // 令牌信息
+	User       *models.User             `json:"user"`        // 用户信息
+	IsNewUser  bool                     `json:"is_new_user"` // 是否为新用户
+	WeChatInfo *services.WeChatUserInfo `json:"wechat_info"` // 微信用户信息
+}
+
+// TokenInfo 令牌信息
+type TokenInfo struct {
+	AccessToken  string `json:"access_token"`  // 访问令牌
+	RefreshToken string `json:"refresh_token"` // 刷新令牌
+	ExpiresIn    int64  `json:"expires_in"`    // 过期时间（秒）
 }

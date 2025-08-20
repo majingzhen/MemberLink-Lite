@@ -27,14 +27,14 @@ func NewWeChatAuthService() *WeChatAuthService {
 
 // WeChatUserInfo 微信用户信息
 type WeChatUserInfo struct {
-	OpenID   string `json:"open_id"`   // 微信用户唯一标识
-	UnionID  string `json:"union_id"`  // 微信UnionID
-	Nickname string `json:"nickname"`  // 昵称
-	Avatar   string `json:"avatar"`    // 头像URL
-	Gender   int    `json:"gender"`    // 性别：1-男性，2-女性，0-未知
-	Province string `json:"province"`  // 省份
-	City     string `json:"city"`      // 城市
-	Country  string `json:"country"`   // 国家
+	OpenID   string `json:"open_id"`  // 微信用户唯一标识
+	UnionID  string `json:"union_id"` // 微信UnionID
+	Nickname string `json:"nickname"` // 昵称
+	Avatar   string `json:"avatar"`   // 头像URL
+	Gender   int    `json:"gender"`   // 性别：1-男性，2-女性，0-未知
+	Province string `json:"province"` // 省份
+	City     string `json:"city"`     // 城市
+	Country  string `json:"country"`  // 国家
 }
 
 // GetAuthURL 获取微信授权URL
@@ -238,6 +238,87 @@ func (s *WeChatAuthService) getUserInfo(ctx context.Context, accessToken, openID
 		City:     userInfoResp.City,
 		Country:  userInfoResp.Country,
 	}, nil
+}
+
+// WeChatMiniProgramSessionResponse 微信小程序会话响应
+type WeChatMiniProgramSessionResponse struct {
+	OpenID     string `json:"openid"`
+	SessionKey string `json:"session_key"`
+	UnionID    string `json:"unionid"`
+	ErrCode    int    `json:"errcode"`
+	ErrMsg     string `json:"errmsg"`
+}
+
+// HandleMiniProgramLogin 处理微信小程序登录
+func (s *WeChatAuthService) HandleMiniProgramLogin(ctx context.Context, code, tenantID string) (*WeChatUserInfo, error) {
+	// 检查微信授权是否启用
+	if !s.isEnabled(tenantID) {
+		return nil, fmt.Errorf("微信授权登录未启用")
+	}
+
+	appID := s.getAppID(tenantID)
+	appSecret := s.getAppSecret(tenantID)
+	if appID == "" || appSecret == "" {
+		return nil, fmt.Errorf("微信配置不完整")
+	}
+
+	// 1. 使用jscode2session获取openid和session_key
+	sessionInfo, err := s.getMiniProgramSession(ctx, code, appID, appSecret)
+	if err != nil {
+		return nil, fmt.Errorf("获取小程序会话失败: %w", err)
+	}
+
+	// 2. 构造用户信息（小程序登录无法获取详细用户信息，使用默认值）
+	userInfo := &WeChatUserInfo{
+		OpenID:   sessionInfo.OpenID,
+		UnionID:  sessionInfo.UnionID,
+		Nickname: "微信用户", // 小程序登录无法获取昵称，使用默认值
+		Avatar:   "",     // 小程序登录无法获取头像
+		Gender:   0,      // 未知性别
+		Province: "",
+		City:     "",
+		Country:  "",
+	}
+
+	return userInfo, nil
+}
+
+// getMiniProgramSession 获取微信小程序会话信息
+func (s *WeChatAuthService) getMiniProgramSession(ctx context.Context, code, appID, appSecret string) (*WeChatMiniProgramSessionResponse, error) {
+	params := url.Values{}
+	params.Set("appid", appID)
+	params.Set("secret", appSecret)
+	params.Set("js_code", code)
+	params.Set("grant_type", "authorization_code")
+
+	sessionURL := fmt.Sprintf("https://api.weixin.qq.com/sns/jscode2session?%s", params.Encode())
+
+	req, err := http.NewRequestWithContext(ctx, "GET", sessionURL, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := s.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var sessionResp WeChatMiniProgramSessionResponse
+	if err := json.Unmarshal(body, &sessionResp); err != nil {
+		return nil, err
+	}
+
+	if sessionResp.ErrCode != 0 {
+		return nil, fmt.Errorf("微信API错误: %d - %s", sessionResp.ErrCode, sessionResp.ErrMsg)
+	}
+
+	return &sessionResp, nil
 }
 
 // RefreshToken 刷新访问令牌

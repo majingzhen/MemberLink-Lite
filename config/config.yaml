@@ -74,9 +74,9 @@ storage:
 
 # 微信授权登录配置（用于微信小程序）
 wechat:
-  enabled: false           # 微信授权登录开关
-  app_id: ""              # 微信应用ID
-  app_secret: ""          # 微信应用密钥
+  enabled: true           # 微信授权登录开关
+  app_id: "wx4e2a37f5eca8d18b"              # 微信应用ID
+  app_secret: "5243c5e34f58a9f0b4d1aae444c4473b"          # 微信应用密钥
   redirect_uri: "http://localhost:8080/api/v1/auth/wechat/callback"  # 回调地址
   
   # 多租户微信配置示例（仅在tenant.enabled=true时生效）

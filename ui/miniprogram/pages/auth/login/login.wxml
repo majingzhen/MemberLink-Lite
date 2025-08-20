@@ -3,9 +3,9 @@
   <!-- 头部区域 -->
   <view class="login-header">
     <view class="logo-section">
-      <view class="logo">👤</view>
-      <view class="title">会员登录</view>
-      <view class="subtitle">欢迎回来，请登录您的账号</view>
+      <view class="logo">🔐</view>
+      <view class="title">欢迎登录</view>
+      <view class="subtitle">登录您的会员账号，开启专属服务</view>
     </view>
   </view>
 
@@ -29,78 +29,71 @@
 
   <!-- 密码登录表单 -->
   <view wx:if="{{loginType === 'password'}}" class="login-form">
-    <fresh-card type="default" shadow="{{true}}" radius="large">
-      <!-- 用户名输入 -->
-      <view class="form-item">
-        <view class="input-wrapper {{errors.username ? 'error' : ''}}">
-          <view class="input-icon">👤</view>
-          <input
-            class="form-input"
-            type="text"
-            placeholder="请输入用户名/手机号/邮箱"
-            value="{{formData.username}}"
-            data-field="username"
-            bindinput="onInput"
-          />
+    <!-- 用户名输入 -->
+    <view class="form-item">
+      <view class="input-wrapper {{errors.username ? 'error' : ''}}">
+        <view class="input-icon">👤</view>
+        <input
+          class="form-input"
+          type="text"
+          placeholder="请输入用户名/手机号/邮箱"
+          value="{{formData.username}}"
+          data-field="username"
+          bindinput="onInput"
+        />
+      </view>
+      <view wx:if="{{errors.username}}" class="error-text">{{errors.username}}</view>
+    </view>
+
+    <!-- 密码输入 -->
+    <view class="form-item">
+      <view class="input-wrapper {{errors.password ? 'error' : ''}}">
+        <view class="input-icon">🔒</view>
+        <input
+          class="form-input"
+          type="{{showPassword ? 'text' : 'password'}}"
+          placeholder="请输入密码"
+          value="{{formData.password}}"
+          data-field="password"
+          bindinput="onInput"
+        />
+        <view class="input-action" bindtap="togglePassword">
+          <text>{{showPassword ? '👁️' : '👁️‍🗨️'}}</text>
         </view>
-        <view wx:if="{{errors.username}}" class="error-text">{{errors.username}}</view>
       </view>
+      <view wx:if="{{errors.password}}" class="error-text">{{errors.password}}</view>
+    </view>
 
-      <!-- 密码输入 -->
-      <view class="form-item">
-        <view class="input-wrapper {{errors.password ? 'error' : ''}}">
-          <view class="input-icon">🔒</view>
-          <input
-            class="form-input"
-            type="{{showPassword ? 'text' : 'password'}}"
-            placeholder="请输入密码"
-            value="{{formData.password}}"
-            data-field="password"
-            bindinput="onInput"
-          />
-          <view class="input-action" bindtap="togglePassword">
-            <text>{{showPassword ? '👁️' : '👁️‍🗨️'}}</text>
-          </view>
-        </view>
-        <view wx:if="{{errors.password}}" class="error-text">{{errors.password}}</view>
-      </view>
+    <!-- 忘记密码 -->
+    <view class="forgot-password">
+      <text bindtap="onForgotPassword">忘记密码？</text>
+    </view>
 
-      <!-- 忘记密码 -->
-      <view class="forgot-password">
-        <text bindtap="onForgotPassword">忘记密码？</text>
-      </view>
-
-      <!-- 登录按钮 -->
-      <fresh-button
-        type="primary"
-        size="large"
-        block="{{true}}"
-        loading="{{loginLoading}}"
-        text="立即登录"
-        bindtap="onPasswordLogin"
-      />
-    </fresh-card>
+    <!-- 登录按钮 -->
+    <button 
+      class="login-button {{loginLoading ? 'loading' : ''}}"
+      disabled="{{loginLoading}}"
+      bindtap="onPasswordLogin"
+    >
+      {{loginLoading ? '登录中...' : '立即登录'}}
+    </button>
   </view>
 
   <!-- 微信登录 -->
   <view wx:if="{{loginType === 'wechat'}}" class="wechat-login">
-    <fresh-card type="primary" shadow="{{true}}" radius="large">
-      <view class="wechat-content">
-        <view class="wechat-icon">💚</view>
-        <view class="wechat-title">微信快速登录</view>
-        <view class="wechat-desc">使用微信账号快速登录，安全便捷</view>
-        
-        <fresh-button
-          type="success"
-          size="large"
-          block="{{true}}"
-          loading="{{wechatLoading}}"
-          text="微信授权登录"
-          icon="👤"
-          bindtap="onWechatLogin"
-        />
-      </view>
-    </fresh-card>
+    <view class="wechat-content">
+      <view class="wechat-icon">💚</view>
+      <view class="wechat-title">微信快速登录</view>
+      <view class="wechat-desc">使用微信账号快速登录，安全便捷</view>
+      
+      <button 
+        class="wechat-button {{wechatLoading ? 'loading' : ''}}"
+        disabled="{{wechatLoading}}"
+        bindtap="onWechatLogin"
+      >
+        {{wechatLoading ? '登录中...' : '微信授权登录'}}
+      </button>
+    </view>
   </view>
 
   <!-- 注册提示 -->

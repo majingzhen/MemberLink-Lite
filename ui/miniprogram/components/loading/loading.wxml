@@ -1,0 +1,16 @@
+<!--components/loading/loading.wxml-->
+<view class="loading-container" wx:if="{{show}}">
+  <view class="loading-content">
+    <view class="loading-spinner">
+      <view class="spinner-ring"></view>
+      <view class="spinner-ring"></view>
+      <view class="spinner-ring"></view>
+    </view>
+    <view class="loading-text">{{text || '加载中...'}}</view>
+    <view class="loading-dots">
+      <view class="dot"></view>
+      <view class="dot"></view>
+      <view class="dot"></view>
+    </view>
+  </view>
+</view>

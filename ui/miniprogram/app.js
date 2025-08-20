@@ -5,7 +5,9 @@ App({
   globalData: {
     userInfo: null,
     token: null,
-    tenantId: null
+    tenantId: null,
+    hasUserInfo: false,
+    systemInfo: null
   },
 
   onLaunch() {
@@ -66,11 +68,16 @@ App({
   // 检查登录状态
   checkLoginStatus() {
     const token = wx.getStorageSync('token')
-    const userInfo = wx.getStorageSync('userInfo')
+    const userInfo = wx.getStorageSync('user_info')
     
     if (token && userInfo) {
       this.globalData.token = token
       this.globalData.userInfo = userInfo
+      this.globalData.hasUserInfo = true
+      console.log('已登录用户:', userInfo)
+    } else {
+      this.globalData.hasUserInfo = false
+      console.log('未登录')
     }
   },
 
@@ -86,21 +93,32 @@ App({
 
   // 设置用户信息
   setUserInfo(userInfo, token) {
+    console.log('设置用户信息:', userInfo)
+    
     this.globalData.userInfo = userInfo
     this.globalData.token = token
+    this.globalData.hasUserInfo = true
     
     // 持久化存储
-    wx.setStorageSync('userInfo', userInfo)
+    wx.setStorageSync('user_info', userInfo)
     wx.setStorageSync('token', token)
+    
+    console.log('用户信息已保存')
   },
 
   // 清除用户信息
   clearUserInfo() {
+    console.log('清除用户信息')
+    
     this.globalData.userInfo = null
     this.globalData.token = null
+    this.globalData.hasUserInfo = false
     
     // 清除存储
-    wx.removeStorageSync('userInfo')
+    wx.removeStorageSync('user_info')
     wx.removeStorageSync('token')
+    wx.removeStorageSync('refresh_token')
+    
+    console.log('用户信息已清除')
   }
 })

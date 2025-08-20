@@ -1,94 +1,124 @@
 <!--pages/member/profile/profile.wxml-->
 <view class="profile-container">
-  <!-- 未登录状态 -->
-  <view wx:if="{{!hasUserInfo}}" class="not-login">
-    <fresh-card type="primary" shadow="{{true}}" radius="large">
-      <view class="not-login-content">
-        <view class="login-icon">👤</view>
-        <view class="login-title">请先登录</view>
-        <view class="login-desc">登录后可查看个人信息和使用更多功能</view>
-        <fresh-button
-          type="primary"
-          size="large"
-          text="立即登录"
-          bindtap="goToLogin"
-        />
+  <!-- 用户信息卡片 -->
+  <view wx:if="{{hasUserInfo}}" class="user-card">
+    <view class="user-header">
+      <view class="avatar-section">
+        <image class="user-avatar" src="{{userInfo.avatar || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+        <view class="avatar-edit">📷</view>
       </view>
-    </fresh-card>
+      <view class="user-info">
+        <view class="user-name">{{userInfo.nickname || userInfo.username}}</view>
+        <view class="user-meta">
+          <text class="user-id">ID: {{userInfo.id}}</text>
+          <text class="user-phone" wx:if="{{userInfo.phone}}">{{userInfo.phone}}</text>
+          <text class="user-email" wx:if="{{userInfo.email}}">{{userInfo.email}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 用户统计 -->
+    <view class="user-stats">
+      <view class="stat-item">
+        <view class="stat-value">¥{{userInfo.balance || 0}}</view>
+        <view class="stat-label">账户余额</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value">{{userInfo.points || 0}}</view>
+        <view class="stat-label">积分</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value">{{userInfo.status === 1 ? '正常' : '异常'}}</view>
+        <view class="stat-label">账户状态</view>
+      </view>
+    </view>
   </view>
 
-  <!-- 已登录状态 -->
-  <view wx:else class="profile-content">
-    <!-- 用户信息卡片 -->
-    <view class="user-card">
-      <fresh-card type="primary" shadow="{{true}}" radius="large">
-        <view class="user-info">
-          <!-- 头像 -->
-          <view class="avatar-section" bindtap="onChooseAvatar">
-            <image 
-              class="user-avatar" 
-              src="{{userInfo.avatar || '/images/default-avatar.png'}}" 
-              mode="aspectFill"
-            />
-            <view class="avatar-edit">📷</view>
-          </view>
+  <!-- 未登录状态 -->
+  <view wx:else class="not-login">
+    <view class="login-icon">👤</view>
+    <view class="login-title">请先登录</view>
+    <view class="login-desc">登录后查看个人信息</view>
+    <button class="login-button" bindtap="goToLogin">立即登录</button>
+  </view>
 
-          <!-- 基本信息 -->
-          <view class="user-details">
-            <view class="user-name">{{userInfo.nickname || userInfo.username}}</view>
-            <view class="user-meta">
-              <text wx:if="{{userInfo.phone}}">📱 {{userInfo.phone}}</text>
-              <text wx:if="{{userInfo.email}}">📧 {{userInfo.email}}</text>
-            </view>
-            <view class="user-stats">
-              <view class="stat-item">
-                <view class="stat-value">¥{{formatMoney(userInfo.balance)}}</view>
-                <view class="stat-label">余额</view>
-              </view>
-              <view class="stat-divider"></view>
-              <view class="stat-item">
-                <view class="stat-value">{{userInfo.points || 0}}</view>
-                <view class="stat-label">积分</view>
-              </view>
-            </view>
-          </view>
+  <!-- 功能菜单 -->
+  <view wx:if="{{hasUserInfo}}" class="menu-section">
+    <view class="section-title">账户管理</view>
+    <view class="menu-list">
+      <view class="menu-item" bindtap="editProfile">
+        <view class="menu-icon">✏️</view>
+        <view class="menu-content">
+          <view class="menu-title">编辑资料</view>
+          <view class="menu-desc">修改个人信息</view>
         </view>
-      </fresh-card>
-    </view>
-
-    <!-- 功能菜单 -->
-    <view class="menu-section">
-      <view class="section-title">功能菜单</view>
+        <view class="menu-arrow">→</view>
+      </view>
       
-      <fresh-card shadow="{{true}}" radius="medium">
-        <view class="menu-list">
-          <view 
-            wx:for="{{menuList}}" 
-            wx:key="title"
-            class="menu-item"
-            data-url="{{item.url}}"
-            bindtap="onMenuTap"
-          >
-            <view class="menu-icon">{{item.icon}}</view>
-            <view class="menu-content">
-              <view class="menu-title">{{item.title}}</view>
-              <view class="menu-desc">{{item.desc}}</view>
-            </view>
-            <view class="menu-arrow">›</view>
-          </view>
+      <view class="menu-item" bindtap="changePassword">
+        <view class="menu-icon">🔒</view>
+        <view class="menu-content">
+          <view class="menu-title">修改密码</view>
+          <view class="menu-desc">更改登录密码</view>
         </view>
-      </fresh-card>
+        <view class="menu-arrow">→</view>
+      </view>
+      
+      <view class="menu-item" bindtap="bindPhone">
+        <view class="menu-icon">📱</view>
+        <view class="menu-content">
+          <view class="menu-title">绑定手机</view>
+          <view class="menu-desc">{{userInfo.phone ? '已绑定' : '未绑定'}}</view>
+        </view>
+        <view class="menu-arrow">→</view>
+      </view>
+      
+      <view class="menu-item" bindtap="bindEmail">
+        <view class="menu-icon">📧</view>
+        <view class="menu-content">
+          <view class="menu-title">绑定邮箱</view>
+          <view class="menu-desc">{{userInfo.email ? '已绑定' : '未绑定'}}</view>
+        </view>
+        <view class="menu-arrow">→</view>
+      </view>
     </view>
+  </view>
 
-    <!-- 退出登录 -->
-    <view class="logout-section">
-      <fresh-button
-        type="danger"
-        size="large"
-        block="{{true}}"
-        text="退出登录"
-        bindtap="onLogout"
-      />
+  <!-- 其他功能 -->
+  <view wx:if="{{hasUserInfo}}" class="menu-section">
+    <view class="section-title">其他功能</view>
+    <view class="menu-list">
+      <view class="menu-item" bindtap="aboutUs">
+        <view class="menu-icon">ℹ️</view>
+        <view class="menu-content">
+          <view class="menu-title">关于我们</view>
+          <view class="menu-desc">了解更多信息</view>
+        </view>
+        <view class="menu-arrow">→</view>
+      </view>
+      
+      <view class="menu-item" bindtap="helpCenter">
+        <view class="menu-icon">❓</view>
+        <view class="menu-content">
+          <view class="menu-title">帮助中心</view>
+          <view class="menu-desc">常见问题解答</view>
+        </view>
+        <view class="menu-arrow">→</view>
+      </view>
+      
+      <view class="menu-item" bindtap="feedback">
+        <view class="menu-icon">💬</view>
+        <view class="menu-content">
+          <view class="menu-title">意见反馈</view>
+          <view class="menu-desc">告诉我们您的建议</view>
+        </view>
+        <view class="menu-arrow">→</view>
+      </view>
     </view>
+  </view>
+
+  <!-- 退出登录 -->
+  <view wx:if="{{hasUserInfo}}" class="logout-section">
+    <button class="logout-button" bindtap="logout">退出登录</button>
   </view>
 </view>

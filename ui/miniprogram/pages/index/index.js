@@ -1,6 +1,7 @@
 // pages/index/index.js
 const app = getApp()
 const { showLoading, hideLoading, showError } = require('../../utils/loading.js')
+const { get } = require('../../utils/request.js')
 
 Page({
   data: {
@@ -41,11 +42,13 @@ Page({
   // 获取用户信息
   getUserInfo() {
     const userInfo = app.globalData.userInfo
-    const token = app.globalData.token
+    const hasUserInfo = app.globalData.hasUserInfo
+    
+    console.log('获取用户信息:', userInfo, hasUserInfo)
     
     this.setData({
       userInfo,
-      hasUserInfo: !!(userInfo && token)
+      hasUserInfo
     })
   },
 
@@ -105,59 +108,75 @@ Page({
   },
 
   // 微信授权登录
-  onWechatLogin() {
+  async onWechatLogin() {
     showLoading('登录中...')
     
-    wx.login({
-      success: (res) => {
-        if (res.code) {
-          // 发送 res.code 到后台换取 openId, sessionKey, unionId
-          console.log('微信登录code:', res.code)
-          // 这里调用后端接口进行微信登录
-          this.handleWechatLogin(res.code)
-        } else {
-          hideLoading()
-          showError('微信登录失败')
-        }
-      },
-      fail: () => {
-        hideLoading()
-        showError('微信登录失败')
+    try {
+      // 获取微信登录code
+      const loginRes = await this.getWechatLoginCode()
+      
+      if (!loginRes.code) {
+        throw new Error('获取微信登录凭证失败')
       }
-    })
+
+      console.log('微信登录code:', loginRes.code)
+
+      // 调用后端微信登录接口 - 使用jscode2session
+      const response = await get('/auth/wechat/jscode2session', {
+        code: loginRes.code
+      })
+
+      console.log('微信登录响应:', response)
+
+      // 保存用户信息和token
+      if (response.user && response.tokens) {
+        // 保存用户信息
+        app.setUserInfo(response.user, response.tokens.access_token)
+        
+        // 保存token到本地存储
+        wx.setStorageSync('token', response.tokens.access_token)
+        wx.setStorageSync('refresh_token', response.tokens.refresh_token)
+        wx.setStorageSync('user_info', response.user)
+        
+        // 更新全局数据
+        app.globalData.token = response.tokens.access_token
+        app.globalData.userInfo = response.user
+        app.globalData.hasUserInfo = true
+
+        hideLoading()
+        
+        wx.showToast({
+          title: '微信登录成功',
+          icon: 'success'
+        })
+        
+        // 更新页面数据
+        this.getUserInfo()
+        
+        // 延迟跳转到首页
+        setTimeout(() => {
+          wx.reLaunch({
+            url: '/pages/index/index'
+          })
+        }, 1000)
+      } else {
+        throw new Error('微信登录响应数据格式错误')
+      }
+
+    } catch (error) {
+      hideLoading()
+      console.error('微信登录失败:', error)
+      showError(error.message || '微信登录失败，请重试')
+    }
   },
 
-  // 处理微信登录
-  handleWechatLogin(code) {
-    // 这里应该调用后端API进行微信登录
-    // 暂时模拟登录成功
-    setTimeout(() => {
-      hideLoading()
-      
-      // 模拟登录成功数据
-      const mockUserInfo = {
-        id: 1,
-        username: 'wechat_user',
-        nickname: '微信用户',
-        avatar: '/images/default-avatar.png',
-        phone: '',
-        email: '',
-        balance: '0.00',
-        points: 0
-      }
-      
-      const mockToken = 'mock_jwt_token_' + Date.now()
-      
-      // 保存用户信息
-      app.setUserInfo(mockUserInfo, mockToken)
-      
-      // 更新页面数据
-      this.getUserInfo()
-      
-      wx.showToast({
-        title: '登录成功',
-        icon: 'success'
+  // 获取微信登录code
+  getWechatLoginCode() {
+    return new Promise((resolve, reject) => {
+      wx.login({
+        success: resolve,
+        fail: reject
       })
-    }, 1000)
+    })
   }
 })

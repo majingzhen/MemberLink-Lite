@@ -1,49 +1,23 @@
 // pages/auth/login/login.js
 const app = getApp()
-const { post } = require('../../../utils/request.js')
+const { post, get } = require('../../../utils/request.js')
 const { showLoading, hideLoading, showError, showSuccess } = require('../../../utils/loading.js')
-const { validatePhone, validateEmail } = require('../../../utils/util.js')
 
 Page({
   data: {
-    // 登录方式 password: 密码登录, wechat: 微信登录
-    loginType: 'password',
-    
-    // 表单数据
+    loginType: 'password', // password | wechat
     formData: {
       username: '',
       password: ''
     },
-    
-    // 表单验证规则
-    rules: {
-      username: [
-        { required: true, message: '请输入用户名/手机号/邮箱' }
-      ],
-      password: [
-        { required: true, message: '请输入密码' },
-        { min: 6, message: '密码长度不能少于6位' }
-      ]
-    },
-    
-    // 表单错误
     errors: {},
-    
-    // 是否显示密码
     showPassword: false,
-    
-    // 登录按钮加载状态
     loginLoading: false,
-    
-    // 微信登录加载状态
     wechatLoading: false
   },
 
-  onLoad(options) {
-    // 检查是否已登录
-    if (app.globalData.token) {
-      this.redirectToHome()
-    }
+  onLoad() {
+    // 页面加载时的初始化
   },
 
   // 切换登录方式
@@ -55,21 +29,15 @@ Page({
     })
   },
 
-  // 输入框输入事件
+  // 输入框变化
   onInput(e) {
     const { field } = e.currentTarget.dataset
     const { value } = e.detail
     
     this.setData({
-      [`formData.${field}`]: value
+      [`formData.${field}`]: value,
+      [`errors.${field}`]: ''
     })
-    
-    // 清除该字段的错误
-    if (this.data.errors[field]) {
-      this.setData({
-        [`errors.${field}`]: ''
-      })
-    }
   },
 
   // 切换密码显示
@@ -79,49 +47,25 @@ Page({
     })
   },
 
-  // 验证表单
-  validateForm() {
-    const { formData, rules } = this.data
-    const errors = {}
-    let isValid = true
-
-    for (const field in rules) {
-      const fieldRules = rules[field]
-      const value = formData[field]
-
-      for (const rule of fieldRules) {
-        if (rule.required && (!value || value.trim() === '')) {
-          errors[field] = rule.message
-          isValid = false
-          break
-        }
-
-        if (rule.min && value && value.length < rule.min) {
-          errors[field] = rule.message
-          isValid = false
-          break
-        }
-
-        if (rule.pattern && value && !rule.pattern.test(value)) {
-          errors[field] = rule.message
-          isValid = false
-          break
-        }
-      }
-    }
-
-    this.setData({ errors })
-    return isValid
+  // 忘记密码
+  onForgotPassword() {
+    wx.showToast({
+      title: '功能开发中',
+      icon: 'none'
+    })
   },
 
   // 密码登录
   async onPasswordLogin() {
-    if (!this.validateForm()) {
+    const { formData } = this.data
+    
+    // 表单验证
+    const errors = this.validateForm(formData)
+    if (Object.keys(errors).length > 0) {
+      this.setData({ errors })
       return
     }
 
-    const { formData } = this.data
-    
     this.setData({ loginLoading: true })
 
     try {
@@ -130,19 +74,36 @@ Page({
         password: formData.password
       })
 
-      // 保存用户信息和token
-      app.setUserInfo(response.user, response.token)
+      console.log('登录响应:', response)
 
-      showSuccess('登录成功')
-      
-      // 延迟跳转，让用户看到成功提示
-      setTimeout(() => {
-        this.redirectToHome()
-      }, 1000)
+      // 保存用户信息和token
+      if (response.user && response.tokens) {
+        // 保存用户信息
+        app.setUserInfo(response.user, response.tokens.access_token)
+
+        // 保存token到本地存储
+        wx.setStorageSync('token', response.tokens.access_token)
+        wx.setStorageSync('refresh_token', response.tokens.refresh_token)
+        wx.setStorageSync('user_info', response.user)
+
+        // 更新全局数据
+        app.globalData.token = response.tokens.access_token
+        app.globalData.userInfo = response.user
+        app.globalData.hasUserInfo = true
+
+        showSuccess('登录成功')
+
+        // 延迟跳转，让用户看到成功提示
+        setTimeout(() => {
+          this.redirectToHome()
+        }, 1000)
+      } else {
+        throw new Error('登录响应数据格式错误')
+      }
 
     } catch (error) {
       console.error('登录失败:', error)
-      showError(error.message || '登录失败，请重试')
+      showError(error.message || '登录失败，请检查用户名和密码')
     } finally {
       this.setData({ loginLoading: false })
     }
@@ -160,19 +121,39 @@ Page({
         throw new Error('获取微信登录凭证失败')
       }
 
-      // 调用后端微信登录接口
-      const response = await get('/auth/wechat/callback', {
+      console.log('微信登录code:', loginRes.code)
+
+      // 调用后端微信登录接口 - 使用jscode2session
+      const response = await get('/auth/wechat/jscode2session', {
         code: loginRes.code
       })
 
-      // 保存用户信息和token
-      app.setUserInfo(response.user, response.token)
+      console.log('微信登录响应:', response)
 
-      showSuccess('微信登录成功')
-      
-      setTimeout(() => {
-        this.redirectToHome()
-      }, 1000)
+      // 保存用户信息和token
+      if (response.user && response.tokens) {
+        // 保存用户信息
+        app.setUserInfo(response.user, response.tokens.access_token)
+        
+        // 保存token到本地存储
+        wx.setStorageSync('token', response.tokens.access_token)
+        wx.setStorageSync('refresh_token', response.tokens.refresh_token)
+        wx.setStorageSync('user_info', response.user)
+        
+        // 更新全局数据
+        app.globalData.token = response.tokens.access_token
+        app.globalData.userInfo = response.user
+        app.globalData.hasUserInfo = true
+
+        showSuccess('微信登录成功')
+
+        // 延迟跳转，让用户看到成功提示
+        setTimeout(() => {
+          this.redirectToHome()
+        }, 1000)
+      } else {
+        throw new Error('微信登录响应数据格式错误')
+      }
 
     } catch (error) {
       console.error('微信登录失败:', error)
@@ -192,15 +173,25 @@ Page({
     })
   },
 
-  // 跳转到注册页
-  goToRegister() {
-    wx.navigateTo({
-      url: '/pages/auth/register/register'
-    })
+  // 表单验证
+  validateForm(formData) {
+    const errors = {}
+
+    if (!formData.username.trim()) {
+      errors.username = '请输入用户名'
+    }
+
+    if (!formData.password) {
+      errors.password = '请输入密码'
+    } else if (formData.password.length < 6) {
+      errors.password = '密码长度不能少于6位'
+    }
+
+    return errors
   },
 
-  // 忘记密码
-  onForgotPassword() {
+  // 跳转到注册页
+  goToRegister() {
     wx.showToast({
       title: '功能开发中',
       icon: 'none'
